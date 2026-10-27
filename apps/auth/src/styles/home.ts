@@ -61,8 +61,13 @@ export const home_styles = stylex.create({
     paddingInline: 0,
     borderWidth: 0,
     boxShadow: "inset 0 0 0 1px oklch(0.72 0.1 300), inset 0 0 0 2px oklch(0.75 0.1 345)",
-    backgroundImage: "linear-gradient(180deg in oklch, oklch(0.6 0.145 345), oklch(0.58 0.135 300))",
-    color: "oklch(1 0 0 / 0.8)",
+    backgroundImage: "linear-gradient(180deg in oklch, var(--continue-pink), var(--continue-lilac))",
+    color: "oklch(1 0 0)",
+  },
+  continue_icon: {
+    backgroundImage: "linear-gradient(180deg in oklch, color-mix(in oklch, oklch(1 0 0) 80%, var(--continue-pink)), color-mix(in oklch, oklch(1 0 0) 80%, var(--continue-lilac)))",
+    backgroundSize: `100% ${signin_control_height}`,
+    backgroundPosition: "center",
   },
   shimmer: {
     gridColumn: 2,

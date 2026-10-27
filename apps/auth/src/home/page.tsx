@@ -29,7 +29,7 @@ export function HomePage() {
             placeholder="you@example.com"
           />
           <Button variant="secondary" xstyle={home_styles.continue} aria-label="Continue">
-            <ArrowNarrowRight />
+            <ArrowNarrowRight xstyle={home_styles.continue_icon} />
           </Button>
         </div>
       </div>

@@ -1,6 +1,8 @@
 import * as stylex from "@stylexjs/stylex";
 
 export const home_theme = stylex.defineVars({
+  "--continue-pink": "oklch(0.6 0.145 345)",
+  "--continue-lilac": "oklch(0.58 0.135 300)",
   "--home-background": {
     default: "var(--frame)",
     "@media (prefers-color-scheme: light)": "var(--white)",
