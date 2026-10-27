@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { Effect } from "effect";
 import { CoreApi, ApiError } from "../../src/api.ts";
+import { api_get } from "../../src/api/effect.ts";
+import * as C from "../../src/contract-v1.ts";
 import { create_core_api, create_query_client, me_query_options } from "../../src/query.ts";
 
 const json_response = (status: number, body: unknown) =>
@@ -64,5 +67,26 @@ describe("CoreApi behavior: credentials, errors, finalize guard", () => {
     const api = new CoreApi("", { fetch_impl });
     await expect(api.me()).rejects.toBeInstanceOf(ApiError);
     await expect(api.me()).rejects.toMatchObject({ code: "bad_response" });
+  });
+
+  it("never sends traceparent even under a traced span (exact CORS allowlist)", async () => {
+    let seen_traceparent: string | null = null;
+    const fetch_impl = (async (_input: unknown, init?: RequestInit) => {
+      seen_traceparent = new Headers(init?.headers).get("traceparent");
+      return json_response(200, {
+        account_id: "acct_AAAAAAAAAAAAAAAAAAAAAAAAAA",
+        email: "a@example.com",
+        display_name: "A",
+        totp_enrolled: false,
+        machines: [],
+        provider_connections: [],
+        latest_config_version: null,
+      });
+    }) as typeof fetch;
+    const program = api_get(fetch_impl, "", "/v1/me", C.MeResp).pipe(
+      Effect.withSpan("browser-request"),
+    );
+    await Effect.runPromise(program);
+    expect(seen_traceparent).toBeNull();
   });
 });

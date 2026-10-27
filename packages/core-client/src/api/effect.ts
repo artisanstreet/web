@@ -76,7 +76,11 @@ export const api_get = <A, I>(
   response_schema: Schema.Schema<A, I>,
 ) =>
   Effect.gen(function* () {
-    const client = (yield* HttpClient.HttpClient).pipe(
+    // No tracer propagation: `traceparent` is not in Core's exact
+    // allow-headers and browsers would fail preflight.
+    const raw_client = yield* HttpClient.HttpClient;
+    const client = raw_client.pipe(
+      HttpClient.withTracerPropagation(false),
       HttpClient.retryTransient({ schedule: get_retry_schedule, times: 2 }),
     );
     const url = yield* absolute_url_effect(base, path);
@@ -148,7 +152,10 @@ export const api_post = <RA, RI, A, I>(
 ) =>
   Effect.gen(function* () {
     // Single attempt: mutating POSTs are never retried.
-    const client = yield* HttpClient.HttpClient;
+    // No tracer propagation: browsers would fail preflight on `traceparent`
+    // (Core allowlist is exact and telemetry-free by design).
+    const raw_client = yield* HttpClient.HttpClient;
+    const client = raw_client.pipe(HttpClient.withTracerPropagation(false));
     let encoded = "{}";
     if (request_schema && request_body !== null) {
       const strict = yield* Effect.try({
