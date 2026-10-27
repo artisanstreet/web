@@ -53,12 +53,10 @@ export const home_styles = stylex.create({
     minHeight: signin_control_height,
     paddingBlock: "var(--sp-1)",
     fontSize: "0.875rem",
-    backgroundColor: "transparent",
-    boxShadow: "none",
+    borderRadius: "var(--radius-md) 0 0 var(--radius-md)",
   },
   continue: {
     position: "relative",
-    transform: "translateY(-1rem)",
     width: signin_control_height,
     height: signin_control_height,
     minHeight: signin_control_height,
@@ -66,6 +64,9 @@ export const home_styles = stylex.create({
     paddingBlock: 0,
     paddingInline: 0,
     borderWidth: 0,
+    borderRadius: "0 var(--radius-md) var(--radius-md) 0",
+    backgroundImage: "linear-gradient(180deg in oklch, var(--continue-pink), var(--continue-lilac))",
+    boxShadow: "inset 0 0 0 1px oklch(0.72 0.1 300), inset 0 0 0 2px oklch(0.75 0.1 345)",
     color: "oklch(1 0 0)",
   },
   continue_icon: {
