@@ -1,0 +1,34 @@
+{
+  "name": "artisanstreet-web-infra",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Alchemy IaC for auth + dashboard TanStack Start Workers (isolated Effect 4; service runtime stays Effect 3).",
+  "scripts": {
+    "typecheck": "tsrs --noEmit",
+    "test": "vp test run",
+    "build": "pnpm run typecheck",
+    "plan": "varlock run --inject vars -- pnpm exec alchemy deploy --dry-run --config alchemy.run.ts",
+    "deploy": "varlock run --inject vars -- pnpm exec alchemy deploy --config alchemy.run.ts"
+  },
+  "dependencies": {
+    "@alchemy.run/cloudflare": "2.0.0-beta.84",
+    "@alchemy.run/domain": "2.0.0-beta.84",
+    "@alchemy.run/frontend-frameworks": "2.0.0-beta.84",
+    "@effect/platform-node": "4.0.6",
+    "alchemy": "2.0.0-beta.84",
+    "effect": "4.0.6"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "@varlock/effect-plugin": "0.1.0",
+    "tsrs": "0.20.0-ts7.1.0-beta",
+    "typescript": "7.1.0-beta",
+    "varlock": "1.23.0",
+    "vite-plus": "1.4.0",
+    "vitest": "5.0.5"
+  },
+  "engines": {
+    "node": "^24.11.0"
+  }
+}

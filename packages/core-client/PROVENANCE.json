@@ -1,0 +1,8 @@
+{
+  "core_commit": "40e040fc6c4772a5f86c9be10b6a1fc246b2e59b",
+  "source_path": "core/src/contracts/v1.ts",
+  "source_sha256": "df51eee21d5a0c0428359ea68b1999d7d6650f94c18aee5c56d889f8a354dc2c",
+  "copy_path": "packages/core-client/src/contract-v1.ts",
+  "copy_method": "manual cp from sibling checkout for sibling-repo independence; not a network build; not vendored third-party code",
+  "note": "Independent repo build must not depend on sibling checkout in CI. This snapshot is the pinned own Core contract source artifact. Update only by re-copying from the announced Core commit and updating this file + source_sha256 + core_commit together."
+}

@@ -1,0 +1,23 @@
+{
+  "name": "artisanstreet-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Artisan Street browser sites: auth + dashboard on TanStack Start (Cloudflare). App authors own apps/*; this repo owns root metadata, packages/*, infra/*.",
+  "packageManager": "pnpm@11.13.0",
+  "scripts": {
+    "typecheck": "pnpm -r --filter './packages/*' --filter './infra' run typecheck",
+    "test": "pnpm -r --filter './packages/*' --filter './infra' run test",
+    "build": "pnpm -r --filter './packages/*' run build"
+  },
+  "devDependencies": {
+    "typescript": "7.1.0-beta",
+    "tsrs": "0.20.0-ts7.1.0-beta",
+    "varlock": "1.23.0",
+    "vitest": "5.0.5"
+  },
+  "engines": {
+    "node": "^24.11.0",
+    "pnpm": "^11.13.0"
+  }
+}
