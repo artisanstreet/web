@@ -65,7 +65,7 @@ export const home_styles = stylex.create({
     color: "oklch(1 0 0)",
   },
   continue_icon: {
-    backgroundImage: "linear-gradient(180deg in oklch, color-mix(in oklch, oklch(1 0 0) 70%, var(--continue-pink)), color-mix(in oklch, oklch(1 0 0) 70%, var(--continue-lilac)))",
+    backgroundImage: "linear-gradient(180deg in oklch, color-mix(in oklch, oklch(1 0 0) 75%, var(--continue-pink)), color-mix(in oklch, oklch(1 0 0) 75%, var(--continue-lilac)))",
     backgroundSize: `100% ${signin_control_height}`,
     backgroundPosition: "center",
   },
