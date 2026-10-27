@@ -1,4 +1,4 @@
-import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
+import { HeadContent, Outlet, Scripts, createRootRoute, useRouterState } from "@tanstack/react-router";
 import { QueryClientProvider } from "@tanstack/react-query";
 import * as React from "react";
 import "@artisanstreet/ui/tokens.css";
@@ -31,25 +31,30 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   const [query_client] = React.useState(create_query_client);
+  const is_home = useRouterState({ select: (state) => state.location.pathname === "/" });
   return (
     <RootDocument>
       <QueryClientProvider client={query_client}>
-        <div className="auth-shell">
-          <a className="skip-link" href="#auth-main">
-            Skip to sign-in
-          </a>
-          <header className="auth-topbar">
-            <a className="auth-brand" href="/">
-              Artisan
+        {is_home ? (
+          <Outlet />
+        ) : (
+          <div className="auth-shell">
+            <a className="skip-link" href="#auth-main">
+              Skip to sign-in
             </a>
-          </header>
-          <main id="auth-main" className="auth-main">
-            <Outlet />
-          </main>
-          <footer className="auth-footer">
-            Sessions last 30 days and can be revoked anytime from the dashboard.
-          </footer>
-        </div>
+            <header className="auth-topbar">
+              <a className="auth-brand" href="/">
+                Artisan
+              </a>
+            </header>
+            <main id="auth-main" className="auth-main">
+              <Outlet />
+            </main>
+            <footer className="auth-footer">
+              Sessions last 30 days and can be revoked anytime from the dashboard.
+            </footer>
+          </div>
+        )}
       </QueryClientProvider>
     </RootDocument>
   );
