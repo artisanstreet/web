@@ -19,15 +19,33 @@ body {
 
 .home-canvas {
   --home-background: var(--frame);
+  --home-foreground: var(--white);
   --pearl-base: oklch(0.224 0.022 285);
   --pearl-pink: oklch(0.67 0.065 345);
   --pearl-lilac: oklch(0.68 0.055 300);
   height: 100vh;
   height: 100dvh;
   display: grid;
+  position: relative;
   grid-template-columns: minmax(0, 3.5fr) minmax(0, 2.5fr);
   background: var(--home-background);
   overflow: hidden;
+}
+
+.home-brand {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: var(--sp-8);
+  color: var(--home-foreground);
+}
+
+.home-wordmark {
+  display: block;
+  width: 4rem;
+  aspect-ratio: 310.804 / 512;
+  background: currentColor;
+  mask: url("../assets/wordmark.svg") center / contain no-repeat;
 }
 
 .home-shimmer {
@@ -49,6 +67,7 @@ body {
 @media (prefers-color-scheme: light) {
   .home-canvas {
     --home-background: var(--white);
+    --home-foreground: var(--black);
     --pearl-base: oklch(0.975 0.012 345);
     --pearl-pink: oklch(0.8 0.055 345);
     --pearl-lilac: oklch(0.82 0.05 300);

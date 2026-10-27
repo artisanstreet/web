@@ -8,6 +8,9 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   return (
     <main className="home-canvas">
+      <header className="home-brand">
+        <span className="home-wordmark" role="img" aria-label="Artisan" />
+      </header>
       <GradientShimmer />
     </main>
   );
