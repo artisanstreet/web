@@ -60,7 +60,7 @@ export const home_styles = stylex.create({
     paddingBlock: 0,
     paddingInline: 0,
     borderWidth: 0,
-    backgroundImage: "linear-gradient(135deg in oklch, oklch(0.58 0.135 300), oklch(0.6 0.145 345))",
+    backgroundImage: "linear-gradient(180deg in oklch, oklch(0.6 0.145 345), oklch(0.58 0.135 300))",
     color: "oklch(1 0 0 / 0.8)",
   },
   shimmer: {
