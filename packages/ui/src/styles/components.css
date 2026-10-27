@@ -81,6 +81,9 @@
   border: 0;
   background: var(--bg);
 }
+.art-input--card:focus-visible {
+  outline: none;
+}
 .art-input::placeholder { color: var(--ink-dim); opacity: 1; }
 .art-field-hint { font-size: 0.85rem; color: var(--muted); }
 .art-field-error { font-size: 0.85rem; color: var(--err); }

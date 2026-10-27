@@ -74,10 +74,13 @@ body {
 .home-signin .art-input {
   width: 100%;
   min-width: 0;
+  min-height: 2.25rem;
+  padding-block: var(--sp-1);
 }
 
 .home-signin .home-continue {
-  width: 2.75rem;
+  width: 2.25rem;
+  min-height: 2.25rem;
   padding: 0;
 }
 
