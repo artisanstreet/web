@@ -11,11 +11,8 @@ uniform float u_gradient_top;
 uniform float u_gradient_vertical_span;
 uniform float u_inverse_gradient_denominator;
 
-uniform vec3 u_base_color;
 uniform vec3 u_pearl_pink;
 uniform vec3 u_pearl_green;
-uniform vec3 u_pearl_white;
-uniform float u_light_mode;
 uniform float u_grain_alpha;
 uniform float u_grain_luminance;
 uniform float u_grain_contrast;
@@ -82,14 +79,9 @@ void main() {
     vec3 interference = 0.5 + 0.5 * cos(
         6.2831853 * optical_path / vec3(650.0, 530.0, 460.0)
     );
-    float pink_amount = smoothstep(-0.18, 0.18,
+    float pink_amount = smoothstep(-0.3, 0.3,
         (interference.r + interference.b) * 0.5 - interference.g);
-    vec3 pearl = mix(u_pearl_green, u_pearl_pink, pink_amount);
-    float white_amount = pow(highlight, 18.0) * 0.42;
-    pearl = mix(pearl, u_pearl_white, white_amount);
-    float reflection = mix(0.015, 0.96, pow(highlight, 2.2));
-    reflection = mix(reflection, mix(0.18, 0.86, pow(highlight, 1.4)), u_light_mode);
-    vec3 color = mix(u_base_color, pearl, reflection * v_highlight_strength);
+    vec3 color = mix(u_pearl_green, u_pearl_pink, pink_amount);
 
     ivec2 grain_position = min(
         ivec2(mod(css_position, GRAIN_SIZE)),

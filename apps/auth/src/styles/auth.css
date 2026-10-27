@@ -19,9 +19,8 @@ body {
 
 .home-canvas {
   --home-background: var(--frame);
-  --pearl-pink: oklch(0.8 0.15 345);
-  --pearl-green: oklch(0.84 0.13 155);
-  --pearl-white: oklch(0.985 0.006 100);
+  --pearl-pink: oklch(0.82 0.10 345);
+  --pearl-green: oklch(0.85 0.09 155);
   height: 100vh;
   height: 100dvh;
   display: grid;
@@ -43,10 +42,7 @@ body {
 }
 
 .home-shimmer[data-state="fallback"] {
-  background: linear-gradient(160deg,
-    color-mix(in oklch, var(--pearl-pink) 25%, var(--home-background)),
-    var(--home-background) 45%,
-    color-mix(in oklch, var(--pearl-green) 25%, var(--home-background)));
+  background: linear-gradient(160deg, var(--pearl-pink), var(--pearl-green));
 }
 
 @media (prefers-color-scheme: light) {

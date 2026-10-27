@@ -51,7 +51,6 @@ const animate = (canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, program:
   const wave_uniform = uniform("u_wave_phase");
   const secondary_uniform = uniform("u_secondary_wave_phase");
   const motion = matchMedia("(prefers-reduced-motion: reduce)");
-  const theme = matchMedia("(prefers-color-scheme: light)");
   let frame = 0;
   let previous_time: number | null = null;
   let wave_phase = 0;
@@ -80,17 +79,14 @@ const animate = (canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, program:
   const update_colors = () => {
     const styles = getComputedStyle(canvas);
     for (const [name, token] of [
-      ["u_base_color", "--home-background"],
       ["u_pearl_pink", "--pearl-pink"],
       ["u_pearl_green", "--pearl-green"],
-      ["u_pearl_white", "--pearl-white"],
     ] as const) {
       color_context.fillStyle = styles.getPropertyValue(token).trim();
       color_context.fillRect(0, 0, 1, 1);
       const pixel = color_context.getImageData(0, 0, 1, 1).data;
       gl.uniform3f(uniform(name), pixel[0]! / 255, pixel[1]! / 255, pixel[2]! / 255);
     }
-    set_float("u_light_mode", theme.matches ? 1 : 0);
     refresh();
   };
 
@@ -116,7 +112,6 @@ const animate = (canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, program:
   const observer = new ResizeObserver(resize);
   observer.observe(canvas);
   motion.addEventListener("change", refresh);
-  theme.addEventListener("change", update_colors);
   document.addEventListener("visibilitychange", refresh);
   update_colors();
   resize();
@@ -125,7 +120,6 @@ const animate = (canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, program:
     cancelAnimationFrame(frame);
     observer.disconnect();
     motion.removeEventListener("change", refresh);
-    theme.removeEventListener("change", update_colors);
     document.removeEventListener("visibilitychange", refresh);
   };
 };
