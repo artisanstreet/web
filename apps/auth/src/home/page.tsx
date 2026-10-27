@@ -1,8 +1,8 @@
 import * as stylex from "@stylexjs/stylex";
 import { home_styles } from "../styles/home.ts";
 import wordmark_url from "../assets/wordmark.svg?url";
-import { Button, TextField } from "@artisanstreet/ui";
-import { ArrowNarrowRight } from "../icons/arrow-narrow-right.tsx";
+import { TextField } from "@artisanstreet/ui";
+import { AttachedAction } from "./action.tsx";
 import { Mail } from "../icons/mail.tsx";
 import { GradientShimmer } from "../shimmer/canvas.tsx";
 
@@ -30,9 +30,7 @@ export function HomePage() {
             autoComplete="email"
             placeholder="you@example.com"
           />
-          <Button variant="secondary" xstyle={home_styles.continue} aria-label="Continue">
-            <ArrowNarrowRight xstyle={home_styles.continue_icon} />
-          </Button>
+          <AttachedAction />
         </div>
       </div>
       <GradientShimmer />
