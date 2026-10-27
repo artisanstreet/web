@@ -20,6 +20,7 @@ body {
 .home-canvas {
   --home-background: var(--frame);
   --home-foreground: var(--white);
+  --home-card-background: var(--bg);
   --pearl-base: oklch(0.224 0.022 285);
   --pearl-pink: oklch(0.67 0.065 345);
   --pearl-lilac: oklch(0.68 0.055 300);
@@ -48,6 +49,22 @@ body {
   mask: url("../assets/wordmark.svg") center / contain no-repeat;
 }
 
+.home-content {
+  grid-column: 1;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: var(--sp-8);
+}
+
+.home-card {
+  width: 100%;
+  max-width: 26rem;
+  height: min(26rem, 60dvh);
+  background: var(--home-card-background);
+  border-radius: var(--radius-lg);
+}
+
 .home-shimmer {
   grid-column: 2;
   width: 100%;
@@ -68,6 +85,7 @@ body {
   .home-canvas {
     --home-background: var(--white);
     --home-foreground: var(--black);
+    --home-card-background: var(--white);
     --pearl-base: oklch(0.975 0.012 345);
     --pearl-pink: oklch(0.8 0.055 345);
     --pearl-lilac: oklch(0.82 0.05 300);

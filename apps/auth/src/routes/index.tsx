@@ -11,6 +11,9 @@ function HomePage() {
       <header className="home-brand">
         <span className="home-wordmark" role="img" aria-label="Artisan" />
       </header>
+      <div className="home-content">
+        <div className="home-card card" />
+      </div>
       <GradientShimmer />
     </main>
   );
