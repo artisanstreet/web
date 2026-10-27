@@ -51,6 +51,7 @@ const animate = (canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, program:
   const wave_uniform = uniform("u_wave_phase");
   const secondary_uniform = uniform("u_secondary_wave_phase");
   const motion = matchMedia("(prefers-reduced-motion: reduce)");
+  const theme = matchMedia("(prefers-color-scheme: light)");
   let frame = 0;
   let previous_time: number | null = null;
   let wave_phase = 0;
@@ -79,6 +80,7 @@ const animate = (canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, program:
   const update_colors = () => {
     const styles = getComputedStyle(canvas);
     for (const [name, token] of [
+      ["u_start_color", "--pearl-base"],
       ["u_pearl_pink", "--pearl-pink"],
       ["u_pearl_green", "--pearl-green"],
     ] as const) {
@@ -87,6 +89,10 @@ const animate = (canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, program:
       const pixel = color_context.getImageData(0, 0, 1, 1).data;
       gl.uniform3f(uniform(name), pixel[0]! / 255, pixel[1]! / 255, pixel[2]! / 255);
     }
+    set_float("u_alpha", theme.matches ? 0.35 : 0.7);
+    set_float("u_grain_luminance", theme.matches ? 220 : 144);
+    set_float("u_grain_contrast", theme.matches ? 34 : 64);
+    set_float("u_grain_saturation", theme.matches ? 8 : 32);
     refresh();
   };
 
@@ -112,6 +118,7 @@ const animate = (canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, program:
   const observer = new ResizeObserver(resize);
   observer.observe(canvas);
   motion.addEventListener("change", refresh);
+  theme.addEventListener("change", update_colors);
   document.addEventListener("visibilitychange", refresh);
   update_colors();
   resize();
@@ -120,6 +127,7 @@ const animate = (canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, program:
     cancelAnimationFrame(frame);
     observer.disconnect();
     motion.removeEventListener("change", refresh);
+    theme.removeEventListener("change", update_colors);
     document.removeEventListener("visibilitychange", refresh);
   };
 };
@@ -171,7 +179,7 @@ export const mount_shimmer = (canvas: HTMLCanvasElement) => {
       u_idle_secondary_stripe_phase: 1.28,
       u_idle_primary_amplitude: 0.19,
       u_idle_secondary_amplitude: 0.055,
-      u_grain_alpha: 0.08,
+      u_grain_alpha: 0.15,
       u_grain_luminance: 128,
       u_grain_contrast: 40,
       u_grain_saturation: 8,

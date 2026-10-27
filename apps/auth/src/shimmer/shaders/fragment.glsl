@@ -1,6 +1,6 @@
 #version 300 es
 // Copyright (C) 2026 The Helium Authors. GPL-3.0-only; see ../license.txt.
-// Artisan adaptation: thin-film phase drives a pink/mint pearlescent palette.
+// Artisan adaptation: original shading with pink and mint highlight tints.
 
 precision highp float;
 
@@ -11,6 +11,7 @@ uniform float u_gradient_top;
 uniform float u_gradient_vertical_span;
 uniform float u_inverse_gradient_denominator;
 
+uniform vec3 u_start_color;
 uniform vec3 u_pearl_pink;
 uniform vec3 u_pearl_green;
 uniform float u_grain_alpha;
@@ -72,16 +73,12 @@ void main() {
     float gradient_position = clamp01(
         dot(gradient_offset, gradient_axis) * u_inverse_gradient_denominator
     );
-    float highlight = gradientHighlightAmount(gradient_position);
-    float film_thickness = 340.0 + gradient_position * 180.0 + v_band.y * 120.0;
-    float view_cosine = mix(0.65, 1.0, highlight);
-    float optical_path = 2.0 * 1.45 * film_thickness * view_cosine;
-    vec3 interference = 0.5 + 0.5 * cos(
-        6.2831853 * optical_path / vec3(650.0, 530.0, 460.0)
+    float stripe_index = v_stripe_start / u_stripe_width;
+    float pink_amount = 0.5 + 0.5 * sin(stripe_index * 0.74 + gradient_position * 2.0);
+    vec3 highlight_color = mix(u_pearl_green, u_pearl_pink, pink_amount);
+    vec3 color = u_start_color + (highlight_color - u_start_color) * (
+        gradientHighlightAmount(gradient_position) * v_highlight_strength
     );
-    float pink_amount = smoothstep(-0.3, 0.3,
-        (interference.r + interference.b) * 0.5 - interference.g);
-    vec3 color = mix(u_pearl_green, u_pearl_pink, pink_amount);
 
     ivec2 grain_position = min(
         ivec2(mod(css_position, GRAIN_SIZE)),
