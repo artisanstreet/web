@@ -21,13 +21,7 @@ body {
   height: 100vh;
   height: 100dvh;
   display: grid;
-  padding: 5vh;
-  padding: 5dvh;
-}
-
-.home-card {
   background: var(--frame);
-  border-radius: var(--radius-lg);
 }
 
 a {
