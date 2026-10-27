@@ -19,8 +19,8 @@ body {
 
 .home-canvas {
   --home-background: var(--frame);
-  --pearl-pink: oklch(0.88 0.075 345);
-  --pearl-green: oklch(0.9 0.065 155);
+  --pearl-pink: oklch(0.8 0.15 345);
+  --pearl-green: oklch(0.84 0.13 155);
   --pearl-white: oklch(0.985 0.006 100);
   height: 100vh;
   height: 100dvh;

@@ -82,13 +82,13 @@ void main() {
     vec3 interference = 0.5 + 0.5 * cos(
         6.2831853 * optical_path / vec3(650.0, 530.0, 460.0)
     );
-    float pink_amount = smoothstep(-0.4, 0.4,
+    float pink_amount = smoothstep(-0.18, 0.18,
         (interference.r + interference.b) * 0.5 - interference.g);
     vec3 pearl = mix(u_pearl_green, u_pearl_pink, pink_amount);
-    float white_amount = pow(highlight, 4.0) * 0.72;
+    float white_amount = pow(highlight, 18.0) * 0.42;
     pearl = mix(pearl, u_pearl_white, white_amount);
-    float reflection = mix(0.10, 0.74, pow(highlight, 1.6));
-    reflection = mix(reflection, mix(0.34, 0.86, highlight), u_light_mode);
+    float reflection = mix(0.015, 0.96, pow(highlight, 2.2));
+    reflection = mix(reflection, mix(0.18, 0.86, pow(highlight, 1.4)), u_light_mode);
     vec3 color = mix(u_base_color, pearl, reflection * v_highlight_strength);
 
     ivec2 grain_position = min(
