@@ -13,7 +13,7 @@ uniform float u_inverse_gradient_denominator;
 
 uniform vec3 u_start_color;
 uniform vec3 u_pearl_pink;
-uniform vec3 u_pearl_green;
+uniform vec3 u_pearl_lilac;
 uniform float u_grain_alpha;
 uniform float u_grain_luminance;
 uniform float u_grain_contrast;
@@ -105,12 +105,12 @@ void main() {
     float stripe_index = v_stripe_start / u_stripe_width;
     float pink_amount = 0.5 + 0.5 * sin(stripe_index * 0.74 + gradient_position * 2.0);
     vec3 pink = srgbToOklab(u_pearl_pink);
-    vec3 green = srgbToOklab(u_pearl_green);
+    vec3 lilac = srgbToOklab(u_pearl_lilac);
     float pink_hue = mod(atan(pink.z, pink.y) + 6.2831853, 6.2831853);
-    float green_hue = mod(atan(green.z, green.y) + 6.2831853, 6.2831853);
-    float hue = mix(green_hue, pink_hue, pink_amount);
-    float chroma = mix(length(green.yz), length(pink.yz), pink_amount);
-    vec3 highlight_lab = vec3(mix(green.x, pink.x, pink_amount), chroma * cos(hue), chroma * sin(hue));
+    float lilac_hue = mod(atan(lilac.z, lilac.y) + 6.2831853, 6.2831853);
+    float hue = mix(lilac_hue, pink_hue, pink_amount);
+    float chroma = mix(length(lilac.yz), length(pink.yz), pink_amount);
+    vec3 highlight_lab = vec3(mix(lilac.x, pink.x, pink_amount), chroma * cos(hue), chroma * sin(hue));
     float reflection = pow(gradientHighlightAmount(gradient_position), 5.0) * v_highlight_strength;
     vec3 color = oklabToSrgb(mix(srgbToOklab(u_start_color), highlight_lab, reflection));
 

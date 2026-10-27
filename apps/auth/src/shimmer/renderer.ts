@@ -82,7 +82,7 @@ const animate = (canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, program:
     for (const [name, token] of [
       ["u_start_color", "--pearl-base"],
       ["u_pearl_pink", "--pearl-pink"],
-      ["u_pearl_green", "--pearl-green"],
+      ["u_pearl_lilac", "--pearl-lilac"],
     ] as const) {
       color_context.fillStyle = styles.getPropertyValue(token).trim();
       color_context.fillRect(0, 0, 1, 1);
