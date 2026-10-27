@@ -65,10 +65,17 @@
 }
 
 .art-field { display: grid; gap: var(--sp-2); margin: 0 0 var(--sp-4); }
-.art-field-label { font-size: 0.9rem; color: var(--ink-dim); }
+.art-field-label {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: var(--tracking-sans);
+  color: var(--ink-dim);
+}
 .art-input,
 .art-select-trigger {
   font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.25rem;
   letter-spacing: var(--tracking-sans);
   background: var(--bg-raised);
   color: var(--ink);
