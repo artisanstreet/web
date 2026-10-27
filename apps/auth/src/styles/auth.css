@@ -71,7 +71,7 @@ a:visited {
 .auth-brand {
   font-family: var(--font-display);
   font-weight: 650;
-  letter-spacing: 0.02em;
+  letter-spacing: var(--tracking-sans);
   color: var(--ink);
   text-decoration: none;
   font-size: 1.02rem;
@@ -99,7 +99,7 @@ a:visited {
   font-family: var(--font-display);
   font-size: 1.55rem;
   line-height: 1.2;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-heading);
   margin: 0 0 var(--sp-2);
 }
 

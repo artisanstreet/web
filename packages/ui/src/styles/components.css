@@ -1,7 +1,7 @@
 .art-button {
   font-family: var(--font-sans);
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: var(--tracking-sans);
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   cursor: pointer;
@@ -69,6 +69,7 @@
 .art-input,
 .art-select-trigger {
   font-family: var(--font-sans);
+  letter-spacing: var(--tracking-sans);
   background: var(--bg-raised);
   color: var(--ink);
   border: 1px solid var(--control-edge);

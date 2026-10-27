@@ -20,6 +20,7 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
+  letter-spacing: var(--tracking-sans);
   font-size: 1rem;
   line-height: 1.55;
   position: relative;
@@ -43,4 +44,13 @@ video {
 ::selection {
   background: var(--selection);
   color: var(--ink);
+}
+
+:where(h1, h2, h3, h4, h5, h6) {
+  letter-spacing: var(--tracking-heading);
+}
+
+:where(code, pre, kbd, samp, .mono) {
+  font-family: var(--font-mono);
+  letter-spacing: var(--tracking-mono);
 }

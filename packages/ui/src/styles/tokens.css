@@ -1,4 +1,5 @@
 @import "./palette.css";
+@import "./fonts.css";
 
 :root {
   --frame: var(--polar-950);
@@ -59,9 +60,12 @@
   --radius-md: 0.65rem;
   --radius-lg: 0.9rem;
 
-  --font-sans: "InterVariable", "Inter", "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "InterVariable", "Inter", "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  --font-sans: "Spline Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-sans);
+  --font-mono: "Spline Sans Mono", ui-monospace, "Cascadia Mono", "SF Mono", monospace;
+  --tracking-sans: -0.04em;
+  --tracking-heading: -0.045em;
+  --tracking-mono: 0;
 
   --maxw-form: 26rem;
   --maxw-shell: 64rem;
