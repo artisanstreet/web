@@ -67,5 +67,11 @@ export const deletion_status_query_options = (
 ): QueryOptions<Awaited<ReturnType<CoreApi["deletion_status"]>>> =>
   options_for(["core", "deletion"], () => api.deletion_status());
 
+export const config_state_query_options = (
+  api: CoreApi,
+  machine_id: string,
+): QueryOptions<Awaited<ReturnType<CoreApi["config_state"]>>> =>
+  options_for(["core", "config", "state", machine_id], () => api.config_state(machine_id));
+
 export const version_query_options = (api: CoreApi): QueryOptions<Awaited<ReturnType<CoreApi["version"]>>> =>
   options_for(["core", "version"], () => api.version());

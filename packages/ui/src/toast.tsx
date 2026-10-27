@@ -10,7 +10,7 @@ export interface PushToastInput {
 }
 
 export interface ToastApi {
-  readonly pushToast: (input: PushToastInput) => void;
+  readonly push_toast: (input: PushToastInput) => void;
 }
 
 const ToastContext = React.createContext<ToastApi | null>(null);
@@ -27,15 +27,17 @@ export interface ToastProviderProps {
   readonly limit?: number;
 }
 
-export const ToastProvider: React.FC<ToastProviderProps> = ({
+const ToastInner: React.FC<{ readonly timeout: number; readonly children: React.ReactNode }> = ({
+  timeout,
   children,
-  timeout = 5000,
-  limit = 3,
-}: ToastProviderProps) => {
+}: {
+  readonly timeout: number;
+  readonly children: React.ReactNode;
+}) => {
   const manager = BaseToast.useToastManager();
   const api = React.useMemo<ToastApi>(
     () => ({
-      pushToast: (input: PushToastInput) => {
+      push_toast: (input: PushToastInput) => {
         manager.add({
           title: input.title,
           description: input.description,
@@ -47,8 +49,8 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
     [manager, timeout],
   );
   return (
-    <BaseToast.Provider timeout={timeout} limit={limit}>
-      <ToastContext.Provider value={api}>{children}</ToastContext.Provider>
+    <ToastContext.Provider value={api}>
+      {children}
       <BaseToast.Portal>
         <BaseToast.Viewport className="art-toast-viewport">
           {manager.toasts.map((toast) => (
@@ -64,6 +66,18 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
           ))}
         </BaseToast.Viewport>
       </BaseToast.Portal>
+    </ToastContext.Provider>
+  );
+};
+
+export const ToastProvider: React.FC<ToastProviderProps> = ({
+  children,
+  timeout = 5000,
+  limit = 3,
+}: ToastProviderProps) => {
+  return (
+    <BaseToast.Provider timeout={timeout} limit={limit}>
+      <ToastInner timeout={timeout}>{children}</ToastInner>
     </BaseToast.Provider>
   );
 };

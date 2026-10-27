@@ -30,6 +30,7 @@ export type { ApiOptions } from "./api.ts";
 export {
   activity_query_options,
   artifacts_query_options,
+  config_state_query_options,
   create_core_api,
   create_query_client,
   deletion_status_query_options,

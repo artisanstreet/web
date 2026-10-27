@@ -27,7 +27,10 @@ export const Dialog: React.FC<DialogProps> = ({
               <BaseDialog.Description className="art-dialog-desc">{description}</BaseDialog.Description>
             ) : null}
             <div className="art-dialog-body">{children}</div>
-            <BaseDialog.Close className="art-dialog-close" aria-label="Close dialog">
+            <BaseDialog.Close
+              className="art-button art-button--ghost art-button--sm art-dialog-close"
+              aria-label="Close dialog"
+            >
               ×
             </BaseDialog.Close>
           </BaseDialog.Popup>

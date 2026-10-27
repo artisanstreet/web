@@ -6,9 +6,9 @@
   "description": "Artisan Street browser sites: auth + dashboard on TanStack Start (Cloudflare). App authors own apps/*; this repo owns root metadata, packages/*, infra/*.",
   "packageManager": "pnpm@11.13.0",
   "scripts": {
-    "typecheck": "pnpm -r --filter './packages/*' --filter './infra' run typecheck",
-    "test": "pnpm -r --filter './packages/*' --filter './infra' run test",
-    "build": "pnpm -r --filter './packages/*' run build"
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm -r --filter './apps/*' --filter './packages/core-client' --filter './infra' run test",
+    "build": "pnpm -r run build"
   },
   "devDependencies": {
     "typescript": "7.1.0-beta",

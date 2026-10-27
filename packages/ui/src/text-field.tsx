@@ -14,6 +14,7 @@ export interface TextFieldProps {
   readonly id?: string;
   readonly name?: string;
   readonly autoComplete?: string;
+  readonly inputMode?: React.InputHTMLAttributes<HTMLInputElement>["inputMode"];
   readonly placeholder?: string;
 }
 
@@ -30,6 +31,7 @@ export const TextField: React.FC<TextFieldProps> = ({
   id,
   name,
   autoComplete,
+  inputMode,
   placeholder,
 }: TextFieldProps) => {
   const field_id = React.useId();
@@ -53,6 +55,7 @@ export const TextField: React.FC<TextFieldProps> = ({
         defaultValue={defaultValue}
         onChange={handle_change}
         autoComplete={autoComplete}
+        inputMode={inputMode}
         placeholder={placeholder}
         className="art-input"
       />

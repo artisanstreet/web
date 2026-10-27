@@ -1,0 +1,41 @@
+/* @artisanstreet/ui base — minimal global reset for TanStack Start shells.
+   No page copy, no layout opinions. App shells keep their own structure;
+   this only removes browser defaults that break the dark Artisan surface:
+   body 8px white margin, blue links, and box-model surprises. All colors
+   come from tokens.css. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.55;
+  position: relative;
+}
+
+a {
+  color: var(--link);
+  text-underline-offset: 0.15em;
+}
+
+a:visited {
+  color: var(--link-visited);
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+}
