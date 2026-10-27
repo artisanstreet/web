@@ -77,6 +77,10 @@
   padding: var(--sp-2) var(--sp-3);
   min-height: 2.75rem;
 }
+.art-input--card {
+  border: 0;
+  background: var(--bg);
+}
 .art-input::placeholder { color: var(--ink-dim); opacity: 1; }
 .art-field-hint { font-size: 0.85rem; color: var(--muted); }
 .art-field-error { font-size: 0.85rem; color: var(--err); }

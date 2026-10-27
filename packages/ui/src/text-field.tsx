@@ -3,6 +3,7 @@ import { Field as BaseField } from "@base-ui/react/field";
 
 export interface TextFieldProps {
   readonly label: string;
+  readonly variant?: "default" | "card";
   readonly value?: string;
   readonly defaultValue?: string;
   readonly onValueChange?: (next: string) => void;
@@ -20,6 +21,7 @@ export interface TextFieldProps {
 
 export const TextField: React.FC<TextFieldProps> = ({
   label,
+  variant = "default",
   value,
   defaultValue,
   onValueChange,
@@ -57,7 +59,7 @@ export const TextField: React.FC<TextFieldProps> = ({
         autoComplete={autoComplete}
         inputMode={inputMode}
         placeholder={placeholder}
-        className="art-input"
+        className={variant === "card" ? "art-input art-input--card card" : "art-input"}
       />
       {description ? <BaseField.Description className="art-field-hint">{description}</BaseField.Description> : null}
       {error ? <p className="art-field-error">{error}</p> : null}

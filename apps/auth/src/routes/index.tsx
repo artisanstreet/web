@@ -15,7 +15,7 @@ function HomePage() {
       </header>
       <div className="home-content">
         <div className="home-signin">
-          <TextField id="signin-email" name="email" label="Email" type="email" autoComplete="email" placeholder="you@example.com" />
+          <TextField variant="card" id="signin-email" name="email" label="Email" type="email" autoComplete="email" placeholder="you@example.com" />
           <Button variant="secondary" className="home-continue" aria-label="Continue">
             <ArrowNarrowRight />
           </Button>
