@@ -1,7 +1,3 @@
-/* @artisanstreet/ui components — quiet surfaces, tactile blue primary.
-   Effective padding is deliberate: equal sides resolve equal. Focus is
-   always visible. No card metrics, no shadcn defaults. */
-
 .art-button {
   font-family: var(--font-sans);
   font-weight: 600;
@@ -24,7 +20,6 @@
   background: var(--primary);
   color: var(--primary-ink);
   border-color: var(--primary-edge);
-  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.12), 0 1px 2px oklch(0 0 0 / 0.4);
 }
 .art-button--primary:hover { background: var(--primary-hover); }
 .art-button--primary:active { background: var(--primary-active); }
@@ -33,50 +28,39 @@
   color: var(--ink);
   border-color: var(--panel-edge);
 }
+.art-button--secondary:hover { background: var(--hover); }
+.art-button--secondary:active { background: var(--pressed); }
 .art-button--ghost {
   background: transparent;
   color: var(--link);
   border-color: transparent;
 }
 .art-button--danger {
-  background: oklch(0.45 0.14 25);
-  color: oklch(0.98 0.005 25);
-  border-color: oklch(0.55 0.12 25);
-  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.1), 0 1px 2px oklch(0 0 0 / 0.4);
+  background: var(--danger);
+  color: var(--danger-ink);
+  border-color: var(--danger-edge);
 }
-.art-button--danger:hover { background: oklch(0.5 0.15 25); }
-.art-button--danger:active { background: oklch(0.4 0.13 25); }
+.art-button--danger:hover { background: var(--danger-hover); }
+.art-button--danger:active { background: var(--danger-active); }
 .art-button:disabled {
   opacity: 1;
   cursor: not-allowed;
   box-shadow: none;
 }
-.art-button--primary:disabled {
-  background: oklch(0.35 0.02 268);
-  color: oklch(0.7 0.01 268);
-  border-color: oklch(0.4 0.02 268);
-}
-.art-button--secondary:disabled {
-  background: oklch(0.25 0.01 268);
-  color: oklch(0.65 0.01 268);
-  border-color: oklch(0.35 0.015 268);
-}
-.art-button--ghost:disabled {
-  background: transparent;
-  color: oklch(0.6 0.02 268);
-  border-color: transparent;
-}
+.art-button--primary:disabled,
+.art-button--secondary:disabled,
 .art-button--danger:disabled {
-  background: oklch(0.3 0.05 25);
-  color: oklch(0.7 0.03 25);
-  border-color: oklch(0.38 0.05 25);
+  background: var(--disabled);
+  color: var(--disabled-ink);
+  border-color: var(--disabled-edge);
 }
+.art-button--ghost:disabled { color: var(--disabled-ink); }
 .art-button:focus-visible,
 .art-input:focus-visible,
 .art-select-trigger:focus-visible,
 .art-check-box:focus-visible,
 .art-switch-track:focus-visible {
-  outline: 2px solid var(--link);
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
 
@@ -87,11 +71,12 @@
   font-family: var(--font-sans);
   background: var(--bg-raised);
   color: var(--ink);
-  border: 1px solid var(--panel-edge);
+  border: 1px solid var(--control-edge);
   border-radius: var(--radius-md);
   padding: var(--sp-2) var(--sp-3);
   min-height: 2.75rem;
 }
+.art-input::placeholder { color: var(--ink-dim); opacity: 1; }
 .art-field-hint { font-size: 0.85rem; color: var(--muted); }
 .art-field-error { font-size: 0.85rem; color: var(--err); }
 
@@ -99,7 +84,7 @@
   position: fixed;
   inset: 0;
   z-index: 50;
-  background: oklch(0 0 0 / 0.6);
+  background: oklch(from var(--black) l c h / 0.7);
 }
 .art-dialog-viewport {
   position: fixed;

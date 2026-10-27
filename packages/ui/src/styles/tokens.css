@@ -1,40 +1,50 @@
-/* @artisanstreet/ui tokens — single shared Artisan dark system.
-   All interface colors authored in OKLCH. No palette color is obtained by
-   stacking translucency; transparent materials are limited to intentional
-   press fades. Spacing scale is shared; opposing sides default to equal
-   values. Quiet surfaces, tactile blue primary. */
+@import "./palette.css";
 
 :root {
-  --bg: oklch(0.165 0.006 268);
-  --bg-raised: oklch(0.205 0.008 268);
-  --panel: oklch(0.225 0.009 268);
-  --panel-edge: oklch(0.305 0.011 268);
-  --panel-edge-soft: oklch(0.36 0.012 268);
-  --surface: oklch(0.215 0.008 280);
-  --surface-2: oklch(0.25 0.009 280);
-  --line: oklch(0.32 0.01 280);
-  --line-soft: oklch(0.38 0.011 280);
+  --frame: var(--polar-950);
+  --bg: var(--polar-900);
+  --bg-raised: var(--polar-800);
+  --panel: var(--polar-800);
+  --panel-edge: var(--polar-700);
+  --panel-edge-soft: var(--polar-600);
+  --surface: var(--polar-800);
+  --surface-2: var(--polar-700);
+  --line: var(--polar-700);
+  --line-soft: var(--polar-600);
+  --control-edge: var(--polar-500);
+  --hover: var(--polar-700);
+  --pressed: var(--polar-600);
 
-  --ink: oklch(0.935 0.004 268);
-  --ink-dim: oklch(0.745 0.01 268);
-  --ink-faint: oklch(0.62 0.01 268);
-  --text: oklch(0.935 0.004 280);
-  --muted: oklch(0.74 0.01 280);
+  --ink: var(--white);
+  --ink-dim: var(--polar-300);
+  --ink-faint: var(--polar-500);
+  --text: var(--ink);
+  --muted: var(--ink-dim);
 
-  --primary: oklch(0.52 0.172 262);
-  --primary-hover: oklch(0.555 0.175 262);
-  --primary-active: oklch(0.475 0.168 262);
-  --primary-ink: oklch(1 0 0);
-  --primary-edge: oklch(0.68 0.13 262);
-  --link: oklch(0.72 0.14 262);
-  --link-visited: oklch(0.76 0.09 285);
-  --accent: oklch(0.66 0.17 262);
-  --accent-solid: oklch(0.52 0.165 262);
+  --primary: var(--white);
+  --primary-hover: var(--polar-50);
+  --primary-active: var(--polar-100);
+  --primary-ink: var(--black);
+  --primary-edge: var(--primary);
+  --link: var(--blue-400);
+  --link-visited: var(--link);
+  --accent: var(--indigo-500);
+  --accent-solid: var(--indigo-500);
+  --selection: var(--blue-900);
+  --focus: var(--link);
 
-  --ok: oklch(0.8 0.145 152);
-  --warn: oklch(0.81 0.115 85);
-  --err: oklch(0.74 0.13 25);
-  --err-surface: oklch(0.26 0.03 25);
+  --ok: var(--emerald-500);
+  --warn: var(--amber-500);
+  --err: var(--red-500);
+  --err-surface: var(--red-950);
+  --danger: var(--red-600);
+  --danger-hover: var(--red-700);
+  --danger-active: var(--red-950);
+  --danger-ink: var(--white);
+  --danger-edge: var(--red-400);
+  --disabled: var(--polar-700);
+  --disabled-ink: var(--polar-400);
+  --disabled-edge: var(--polar-600);
 
   --sp-1: 0.25rem;
   --sp-2: 0.5rem;

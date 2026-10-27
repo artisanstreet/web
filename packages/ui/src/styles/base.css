@@ -39,3 +39,8 @@ svg,
 video {
   max-width: 100%;
 }
+
+::selection {
+  background: var(--selection);
+  color: var(--ink);
+}
