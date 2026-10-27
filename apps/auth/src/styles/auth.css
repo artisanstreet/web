@@ -21,7 +21,7 @@ body {
   height: 100vh;
   height: 100dvh;
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   background: var(--frame);
   overflow: hidden;
 }
