@@ -37,6 +37,7 @@ export const home_styles = stylex.create({
     padding: "var(--sp-8)",
   },
   signin: {
+    position: "relative",
     width: "100%",
     maxWidth: "26rem",
     display: "grid",
@@ -52,10 +53,12 @@ export const home_styles = stylex.create({
     minHeight: signin_control_height,
     paddingBlock: "var(--sp-1)",
     fontSize: "0.875rem",
+    backgroundColor: "transparent",
+    boxShadow: "none",
   },
   continue: {
     position: "relative",
-    transform: "translateY(-0.5rem)",
+    transform: "translateY(-1rem)",
     width: signin_control_height,
     height: signin_control_height,
     minHeight: signin_control_height,

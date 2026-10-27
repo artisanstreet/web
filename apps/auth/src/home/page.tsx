@@ -3,6 +3,7 @@ import { home_styles } from "../styles/home.ts";
 import wordmark_url from "../assets/wordmark.svg?url";
 import { TextField } from "@artisanstreet/ui";
 import { AttachedAction } from "./action.tsx";
+import { AttachedSurface } from "./surface.tsx";
 import { Mail } from "../icons/mail.tsx";
 import { GradientShimmer } from "../shimmer/canvas.tsx";
 
@@ -18,6 +19,7 @@ export function HomePage() {
       </header>
       <div {...stylex.props(home_styles.content)}>
         <div {...stylex.props(home_styles.signin)}>
+          <AttachedSurface />
           <TextField
             variant="card"
             xstyle={home_styles.field}
