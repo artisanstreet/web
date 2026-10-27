@@ -51,6 +51,7 @@ export const home_styles = stylex.create({
     height: signin_control_height,
     minHeight: signin_control_height,
     paddingBlock: "var(--sp-1)",
+    fontSize: "0.875rem",
   },
   continue: {
     width: signin_control_height,

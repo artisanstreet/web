@@ -7,6 +7,7 @@ export interface TextFieldProps {
   readonly label: string;
   readonly xstyle?: stylex.StyleXStyles;
   readonly input_style?: stylex.StyleXStyles;
+  readonly leading_icon?: React.ReactNode;
   readonly variant?: "default" | "card";
   readonly value?: string;
   readonly defaultValue?: string;
@@ -27,6 +28,7 @@ export const TextField: React.FC<TextFieldProps> = ({
   label,
   xstyle,
   input_style,
+  leading_icon,
   variant = "default",
   value,
   defaultValue,
@@ -53,20 +55,32 @@ export const TextField: React.FC<TextFieldProps> = ({
         {label}
         {required ? " *" : ""}
       </BaseField.Label>
-      <BaseField.Control
-        id={control_id}
-        name={name}
-        type={type}
-        required={required}
-        disabled={disabled}
-        value={value}
-        defaultValue={defaultValue}
-        onChange={handle_change}
-        autoComplete={autoComplete}
-        inputMode={inputMode}
-        placeholder={placeholder}
-        {...stylex.props(field_styles.input, variant === "card" && field_styles.card, input_style)}
-      />
+      <div {...stylex.props(field_styles.control)}>
+        {leading_icon ? (
+          <span {...stylex.props(field_styles.leading_icon)} aria-hidden="true">
+            {leading_icon}
+          </span>
+        ) : null}
+        <BaseField.Control
+          id={control_id}
+          name={name}
+          type={type}
+          required={required}
+          disabled={disabled}
+          value={value}
+          defaultValue={defaultValue}
+          onChange={handle_change}
+          autoComplete={autoComplete}
+          inputMode={inputMode}
+          placeholder={placeholder}
+          {...stylex.props(
+            field_styles.input,
+            variant === "card" && field_styles.card,
+            Boolean(leading_icon) && field_styles.with_icon,
+            input_style,
+          )}
+        />
+      </div>
       {description ? (
         <BaseField.Description {...stylex.props(field_styles.hint)}>
           {description}

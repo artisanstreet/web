@@ -75,6 +75,20 @@ export const button_styles = stylex.create({
 
 export const field_styles = stylex.create({
   root: { display: "grid", gap: "var(--sp-2)", margin: "0 0 var(--sp-4)" },
+  control: { position: "relative", display: "grid", minWidth: 0 },
+  leading_icon: {
+    position: "absolute",
+    insetInlineStart: "var(--sp-3)",
+    top: "50%",
+    transform: "translateY(-50%)",
+    width: "1rem",
+    height: "1rem",
+    display: "grid",
+    placeItems: "center",
+    color: "var(--muted)",
+    pointerEvents: "none",
+  },
+  with_icon: { paddingInlineStart: "calc(var(--sp-3) + 1rem + var(--sp-2))" },
   label: {
     fontSize: "0.875rem",
     lineHeight: "1.25rem",
@@ -82,6 +96,7 @@ export const field_styles = stylex.create({
     color: "var(--ink-dim)",
   },
   input: {
+    minWidth: 0,
     fontFamily: "var(--font-sans)",
     fontSize: "1rem",
     lineHeight: "1.25rem",

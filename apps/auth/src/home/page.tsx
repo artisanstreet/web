@@ -3,6 +3,7 @@ import { home_styles } from "../styles/home.ts";
 import wordmark_url from "../assets/wordmark.svg?url";
 import { Button, TextField } from "@artisanstreet/ui";
 import { ArrowNarrowRight } from "../icons/arrow-narrow-right.tsx";
+import { Mail } from "../icons/mail.tsx";
 import { GradientShimmer } from "../shimmer/canvas.tsx";
 
 export function HomePage() {
@@ -21,6 +22,7 @@ export function HomePage() {
             variant="card"
             xstyle={home_styles.field}
             input_style={home_styles.input}
+            leading_icon={<Mail />}
             id="signin-email"
             name="email"
             label="Email"
