@@ -1,6 +1,9 @@
 // Scanner safety: opening /approve?token=... must never consume on GET.
 // Approval happens only through an explicit POST triggered by the user
 // button. Unknown/expired tokens map to a generic message (no account oracle).
+//
+// The mount/click/scrub interaction itself is covered by the rendered route
+// test at tests/routes/approve.test.tsx (mirrors src/routes/approve.tsx).
 
 import { describe, expect, it } from "vitest";
 import { CoreApi } from "@artisanstreet/core-client";
@@ -8,20 +11,21 @@ import { CoreApi } from "@artisanstreet/core-client";
 const REQUEST_ID = `logreq_01K${"A".repeat(23)}`;
 
 describe("approval scanner safety", () => {
-  it("performs no network call until the user approves", async () => {
-    let calls = 0;
-    const fetch_impl = (async () => {
-      calls += 1;
+  it("consume posts the email token explicitly, exactly once per approval", async () => {
+    const seen: Array<unknown> = [];
+    const fetch_impl = (async (_url: string | URL | Request, init?: RequestInit) => {
+      const raw = init?.body as string | Uint8Array | undefined;
+      seen.push(
+        raw === undefined || raw === null ? {} : JSON.parse(typeof raw === "string" ? raw : new TextDecoder().decode(raw)),
+      );
       return new Response(
         JSON.stringify({ request_id: REQUEST_ID, status: "email_approved", totp_required: false }),
         { status: 200 },
       );
     }) as typeof fetch;
-    // Mounting the page does nothing: only the button handler calls consume.
-    expect(calls).toBe(0);
     const api = new CoreApi("", { fetch_impl });
     await api.consume_magic_link("emailtok");
-    expect(calls).toBe(1);
+    expect(seen).toEqual([{ token: "emailtok" }]);
   });
 
   it("maps unknown tokens to a generic unauthorized without account detail", async () => {

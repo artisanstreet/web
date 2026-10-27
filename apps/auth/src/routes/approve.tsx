@@ -39,7 +39,6 @@ function ApprovePage() {
   const [recovery_value, set_recovery_value] = React.useState("");
   const [use_recovery, set_use_recovery] = React.useState(false);
   const [finish_error, set_finish_error] = React.useState<string | null>(null);
-  const [consumed, set_consumed] = React.useState(false);
 
   // GET never consumes: no effect here calls consume. Only the button does.
   const scrub_token_from_url = () => {
@@ -59,7 +58,6 @@ function ApprovePage() {
   const consume_mutation = useMutation({
     mutationFn: async (email_token: string) => api.consume_magic_link(email_token),
     onSuccess: (res) => {
-      set_consumed(true);
       scrub_token_from_url();
       if (res.status === "expired") {
         set_outcome({ _tag: "Expired" });
@@ -137,32 +135,34 @@ function ApprovePage() {
       </p>
 
       <div>
-        {token === null ? (
-          <>
-            <p className="auth-status" role="status">
-              This approval link is missing its token, so there is nothing to approve.
-            </p>
-            <p className="auth-status">
-              <a href="/">Request a new sign-in link</a> and open the fresh approval link from your
-              email.
-            </p>
-          </>
-        ) : consumed === false && outcome._tag === "Idle" ? (
-          <>
-            <Button
-              variant="primary"
-              type="button"
-              disabled={consume_mutation.isPending}
-              onClick={approve}
-            >
-              {consume_mutation.isPending ? "Approving…" : "Approve this request"}
-            </Button>
-            {approve_error ? (
-              <p className="auth-error" role="alert">
-                {approve_error}
+        {outcome._tag === "Idle" ? (
+          token === null ? (
+            <>
+              <p className="auth-status" role="status">
+                This approval link is missing its token, so there is nothing to approve.
               </p>
-            ) : null}
-          </>
+              <p className="auth-status">
+                <a href="/">Request a new sign-in link</a> and open the fresh approval link from your
+                email.
+              </p>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="primary"
+                type="button"
+                disabled={consume_mutation.isPending}
+                onClick={approve}
+              >
+                {consume_mutation.isPending ? "Approving…" : "Approve this request"}
+              </Button>
+              {approve_error ? (
+                <p className="auth-error" role="alert">
+                  {approve_error}
+                </p>
+              ) : null}
+            </>
+          )
         ) : null}
 
         {outcome._tag === "ApprovedSameTab" ? (
