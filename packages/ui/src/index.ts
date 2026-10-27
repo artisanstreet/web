@@ -1,5 +1,6 @@
 import "./styles/tokens.css";
 import "./styles/base.css";
+import "./styles/surfaces.css";
 import "./styles/components.css";
 
 export { Button } from "./button.tsx";

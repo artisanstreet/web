@@ -2,6 +2,7 @@ import { HeadContent, Outlet, Scripts, createRootRoute, useRouterState } from "@
 import { QueryClientProvider } from "@tanstack/react-query";
 import * as React from "react";
 import "@artisanstreet/ui/tokens.css";
+import "@artisanstreet/ui/surfaces.css";
 import "../styles/auth.css";
 import { create_query_client } from "@artisanstreet/core-client";
 import { CORE_API_BASE } from "../lib/env.ts";

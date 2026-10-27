@@ -7,7 +7,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./tokens.css": "./src/styles/tokens.css",
-    "./base.css": "./src/styles/base.css"
+    "./base.css": "./src/styles/base.css",
+    "./surfaces.css": "./src/styles/surfaces.css"
   },
   "main": "./src/index.ts",
   "types": "./src/index.ts",
