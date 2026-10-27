@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { GradientShimmer } from "../shimmer/canvas.tsx";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -7,6 +8,7 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   return (
     <main className="home-canvas">
+      <GradientShimmer />
     </main>
   );
 }
