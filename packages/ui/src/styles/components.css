@@ -80,6 +80,7 @@
 .art-input--card {
   border: 0;
   background: var(--bg);
+  caret-color: var(--muted);
 }
 .art-input--card:focus-visible {
   outline: none;
