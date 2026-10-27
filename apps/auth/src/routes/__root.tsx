@@ -4,8 +4,15 @@ import * as React from "react";
 import "@artisanstreet/ui/tokens.css";
 import "../styles/auth.css";
 import { create_query_client } from "@artisanstreet/core-client";
+import { CORE_API_BASE } from "../lib/env.ts";
+import { security_headers } from "../lib/content-security.ts";
 
 export const Route = createRootRoute({
+  headers: ({ ssr }) => {
+    const nonce = (ssr as { nonce?: unknown } | undefined)?.nonce;
+    if (typeof nonce !== "string" || nonce.length === 0) return;
+    return security_headers(nonce, CORE_API_BASE);
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -17,13 +24,13 @@ export const Route = createRootRoute({
         content: "Sign in to Artisan with an emailed link.",
       },
     ],
+    links: [{ rel: "icon", href: "data:," }],
   }),
   component: RootComponent,
 });
 
-const query_client = create_query_client();
-
 function RootComponent() {
+  const [query_client] = React.useState(create_query_client);
   return (
     <RootDocument>
       <QueryClientProvider client={query_client}>

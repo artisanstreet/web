@@ -3,6 +3,8 @@
 // javascript:/data: schemes. Never transports tokens — return_to is a plain
 // post-login landing path, never a credential.
 
+import { Either } from "effect";
+import * as Url from "@effect/platform/Url";
 import { DASHBOARD_BASE } from "./env.ts";
 
 const ALLOWED_PATHS = new Set([
@@ -38,21 +40,17 @@ export const parse_return_to = (raw: string | null | undefined): string | null =
   if (trimmed.length > 512) return null;
   // Absolute dashboard URL: accept only the exact configured origin.
   if (/^https?:\/\//i.test(trimmed)) {
-    const dash_origin = (() => {
-      try {
-        return new URL(DASHBOARD_BASE).origin;
-      } catch {
-        return "https://dashboard.artisan.st";
-      }
-    })();
-    try {
-      const url = new URL(trimmed);
-      if (url.origin !== dash_origin) return null;
-      const path = `${url.pathname}${url.search}`;
-      return is_safe_path(path) ? path : null;
-    } catch {
-      return null;
-    }
+    return Either.match(
+      Either.all({ url: Url.fromString(trimmed), dash: Url.fromString(DASHBOARD_BASE) }),
+      {
+        onLeft: () => null,
+        onRight: ({ url, dash }) => {
+          if (url.origin !== dash.origin) return null;
+          const path = `${url.pathname}${url.search}`;
+          return is_safe_path(path) ? path : null;
+        },
+      },
+    );
   }
   return is_safe_path(trimmed) ? trimmed : null;
 };

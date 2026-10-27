@@ -10,7 +10,7 @@ import {
   FinalizeNotApproved,
   FinalizeTotpRequired,
   finalize_failure_message,
-} from "./auth-machine.ts";
+} from "./auth/state.ts";
 
 export const friendly_error = (err: unknown): string => {
   if (

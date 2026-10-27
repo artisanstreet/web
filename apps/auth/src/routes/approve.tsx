@@ -5,9 +5,9 @@ import { Effect } from "effect";
 import { create_core_api } from "@artisanstreet/core-client";
 import { Button, TextField } from "@artisanstreet/ui";
 import { CORE_API_BASE } from "../lib/env.ts";
-import { load_request_secret } from "../lib/auth-storage.ts";
-import { finalize_effect, type LoginState } from "../lib/auth-machine.ts";
-import { clear_request_secret } from "../lib/auth-storage.ts";
+import { load_request_secret } from "../lib/auth/storage.ts";
+import { finalize_effect, type LoginState } from "../lib/auth/state.ts";
+import { clear_request_secret } from "../lib/auth/storage.ts";
 import { friendly_error } from "../lib/friendly-error.ts";
 import { dashboard_url, parse_return_to } from "../lib/return-to.ts";
 

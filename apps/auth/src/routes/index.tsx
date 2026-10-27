@@ -9,12 +9,12 @@ import {
   clear_request_secret,
   load_request_secret,
   store_request_secret,
-} from "../lib/auth-storage.ts";
+} from "../lib/auth/storage.ts";
 import {
   finalize_effect,
   next_login_state,
   type LoginState,
-} from "../lib/auth-machine.ts";
+} from "../lib/auth/state.ts";
 import { start_login_poll } from "../lib/login-poll.ts";
 import { friendly_error } from "../lib/friendly-error.ts";
 import { dashboard_url, parse_return_to } from "../lib/return-to.ts";
