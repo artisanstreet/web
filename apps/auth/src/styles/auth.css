@@ -21,8 +21,8 @@ body {
   height: 100vh;
   height: 100dvh;
   display: grid;
-  padding: 10vh;
-  padding: 10dvh;
+  padding: 5vh;
+  padding: 5dvh;
 }
 
 .home-card {
