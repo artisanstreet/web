@@ -1,5 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
-  component: () => null,
+  component: HomePage,
 });
+
+function HomePage() {
+  return (
+    <main className="home-canvas">
+      <div className="home-card" />
+    </main>
+  );
+}
