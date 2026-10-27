@@ -74,8 +74,8 @@ export const api_get = <A, I>(
   base: string,
   path: string,
   response_schema: Schema.Schema<A, I>,
-) =>
-  Effect.gen(function* () {
+) => {
+  const program = Effect.gen(function* () {
     // No tracer propagation: `traceparent` is not in Core's exact
     // allow-headers and browsers would fail preflight.
     const raw_client = yield* HttpClient.HttpClient;
@@ -94,7 +94,9 @@ export const api_get = <A, I>(
       try: () => decode_lenient(response_schema, ok),
       catch: () => new DecodeFailure({ reason: "unreadable shape" }),
     });
-  }).pipe((program) => with_browser_http(program, fetch_impl));
+  });
+  return with_browser_http(program, fetch_impl);
+};
 
 /** Fetch seam + base for composed Effect grant flows (internal plumbing). */
 export interface HttpSeam {
@@ -149,8 +151,8 @@ export const api_post = <RA, RI, A, I>(
   request_body: RA | null,
   response_schema: Schema.Schema<A, I>,
   encode_error: (encode_err: unknown) => ApiFailure,
-) =>
-  Effect.gen(function* () {
+) => {
+  const program = Effect.gen(function* () {
     // Single attempt: mutating POSTs are never retried.
     // No tracer propagation: browsers would fail preflight on `traceparent`
     // (Core allowlist is exact and telemetry-free by design).
@@ -176,4 +178,6 @@ export const api_post = <RA, RI, A, I>(
       try: () => decode_lenient(response_schema, ok),
       catch: () => new DecodeFailure({ reason: "unreadable shape" }),
     });
-  }).pipe((program) => with_browser_http(program, fetch_impl));
+  });
+  return with_browser_http(program, fetch_impl);
+};
