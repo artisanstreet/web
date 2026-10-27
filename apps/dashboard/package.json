@@ -1,0 +1,48 @@
+{
+  "name": "@artisanstreet/dashboard",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "dashboard.artisan.st — Artisan account dashboard (overview, machines, sessions, credentials, config, activity, security) on TanStack Start.",
+  "scripts": {
+    "dev": "vp dev --port 5101",
+    "build": "vp build",
+    "typecheck": "tsrs --noEmit",
+    "test": "vp test run"
+  },
+  "dependencies": {
+    "@artisanstreet/core-client": "workspace:*",
+    "@artisanstreet/ui": "workspace:*",
+    "@effect/platform": "0.97.2",
+    "@fontsource-variable/inter": "5.3.0",
+    "@scure/base": "2.4.0",
+    "@tanstack/react-query": "5.105.0",
+    "@tanstack/react-router": "1.170.46",
+    "@tanstack/react-start": "1.169.4",
+    "effect": "3.22.4",
+    "qrcode": "1.5.4",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@testing-library/react": "16.3.2",
+    "@types/node": "^24.0.0",
+    "@types/qrcode": "1.5.6",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "5.0.0",
+    "axe-core": "^4.14.0",
+    "babel-plugin-react-compiler": "1.0.0",
+    "colorjs.io": "^0.7.1",
+    "happy-dom": "^21.0.4",
+    "tsrs": "0.20.0-ts7.1.0-beta",
+    "typescript": "7.1.0-beta",
+    "varlock": "1.23.0",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
+    "vite-plus": "1.4.0",
+    "vitest": "5.0.5"
+  },
+  "engines": {
+    "node": "^24.11.0"
+  }
+}
