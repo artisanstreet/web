@@ -1,6 +1,8 @@
 import * as stylex from "@stylexjs/stylex";
 import { home_theme } from "./theme.stylex.ts";
 
+const signin_control_height = "2.25rem";
+
 export const home_styles = stylex.create({
   canvas: {
     height: "100dvh",
@@ -43,8 +45,24 @@ export const home_styles = stylex.create({
     gap: "var(--sp-3)",
   },
   field: { minWidth: 0, margin: 0 },
-  input: { width: "100%", minWidth: 0, minHeight: "2.25rem", paddingBlock: "var(--sp-1)" },
-  continue: { width: "2.25rem", minHeight: "2.25rem", paddingBlock: 0, paddingInline: 0 },
+  input: {
+    width: "100%",
+    minWidth: 0,
+    height: signin_control_height,
+    minHeight: signin_control_height,
+    paddingBlock: "var(--sp-1)",
+  },
+  continue: {
+    width: signin_control_height,
+    height: signin_control_height,
+    minHeight: signin_control_height,
+    aspectRatio: "1 / 1",
+    paddingBlock: 0,
+    paddingInline: 0,
+    borderWidth: 0,
+    backgroundImage: "linear-gradient(135deg in oklch, oklch(0.58 0.135 300), oklch(0.6 0.145 345))",
+    color: "oklch(1 0 0 / 0.8)",
+  },
   shimmer: {
     gridColumn: 2,
     width: "100%",
