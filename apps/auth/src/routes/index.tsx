@@ -296,6 +296,7 @@ function SignInPage() {
                     <TextField
                       id="signin-totp"
                       label="Authenticator code"
+                      inputMode="numeric"
                       autoComplete="one-time-code"
                       placeholder="123456"
                       value={totp_value}

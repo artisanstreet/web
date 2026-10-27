@@ -185,6 +185,7 @@ function ApprovePage() {
                   <TextField
                     id="approve-totp"
                     label="Authenticator code"
+                    inputMode="numeric"
                     autoComplete="one-time-code"
                     placeholder="123456"
                     value={totp_value}
