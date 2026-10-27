@@ -2,7 +2,7 @@
 // failures go through `runPromiseExit` + `Cause.failureOption` here.
 
 import { Cause, Effect } from "effect";
-import { to_legacy_error } from "./api-error.ts";
+import { to_legacy_error } from "./api/error.ts";
 
 /** UI/SDK boundary: typed failures become legacy `ApiError`, defects safe. */
 export function run_promise<A, E>(effect: Effect.Effect<A, E>): Promise<A> {

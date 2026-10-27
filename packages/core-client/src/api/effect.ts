@@ -5,8 +5,8 @@
 
 import { Effect, Schedule, Schema } from "effect";
 import { FetchHttpClient, HttpBody, HttpClient, HttpClientRequest, type HttpClientResponse } from "@effect/platform";
-import { ApiFailure, DecodeFailure, TransportFailure, error_shape } from "./api-error.ts";
-import * as C from "./contract-v1.ts";
+import { ApiFailure, DecodeFailure, TransportFailure, error_shape } from "./error.ts";
+import * as C from "../contract-v1.ts";
 
 export const strict_options = { onExcessProperty: "error" } as const;
 

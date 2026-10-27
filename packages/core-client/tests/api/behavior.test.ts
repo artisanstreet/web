@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
-import { CoreApi, ApiError } from "../src/api.ts";
-import { create_core_api, create_query_client, me_query_options } from "../src/query.ts";
+import { describe, expect, it } from "vitest";
+import { CoreApi, ApiError } from "../../src/api.ts";
+import { create_core_api, create_query_client, me_query_options } from "../../src/query.ts";
 
 const json_response = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), {
@@ -35,16 +35,8 @@ describe("CoreApi behavior: credentials, errors, finalize guard", () => {
     const fetch_impl = (async () =>
       json_response(401, { error: { code: "unauthorized", message: "bad", request_id: "r1" } })) as typeof fetch;
     const api = new CoreApi("", { fetch_impl });
-    try {
-      await api.me();
-      expect.unreachable();
-    } catch (err) {
-      expect(err).toBeInstanceOf(ApiError);
-      const api_err = err as ApiError;
-      expect(api_err.code).toBe("unauthorized");
-      expect(api_err.status).toBe(401);
-      expect(api_err.request_id).toBe("r1");
-    }
+    await expect(api.me()).rejects.toBeInstanceOf(ApiError);
+    await expect(api.me()).rejects.toMatchObject({ code: "unauthorized", status: 401, request_id: "r1" });
   });
 
   it("finalize refuses without originating request secret", () => {
@@ -70,12 +62,7 @@ describe("CoreApi behavior: credentials, errors, finalize guard", () => {
   it("no silent compat fallthrough: bad shape becomes bad_response, not undefined", async () => {
     const fetch_impl = (async () => json_response(200, { wrong: 1 })) as typeof fetch;
     const api = new CoreApi("", { fetch_impl });
-    try {
-      await api.me();
-      expect.unreachable();
-    } catch (err) {
-      expect(err).toBeInstanceOf(ApiError);
-      expect((err as ApiError).code).toBe("bad_response");
-    }
+    await expect(api.me()).rejects.toBeInstanceOf(ApiError);
+    await expect(api.me()).rejects.toMatchObject({ code: "bad_response" });
   });
 });

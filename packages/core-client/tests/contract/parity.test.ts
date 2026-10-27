@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { Schema } from "effect";
-import * as C from "../src/contract-v1.ts";
-import { decode_lenient, encode_strict } from "../src/api-effect.ts";
-import { strict_options } from "../src/api-effect.ts";
+import * as C from "../../src/contract-v1.ts";
+import { decode_lenient, encode_strict } from "../../src/api/effect.ts";
+import { strict_options } from "../../src/api/effect.ts";
 
 describe("contract parity: request strict, response lenient", () => {
   it("rejects unknown request fields (strict)", () => {

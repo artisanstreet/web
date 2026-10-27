@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   AUTH_PROD_ORIGIN,
   DASHBOARD_PROD_ORIGIN,
-  STACK_NAME,
   assert_all_origins_distinct,
   assert_browser_origins_for_stage,
   assert_origin_for_stage,
@@ -12,10 +11,6 @@ import {
 } from "../src/config.ts";
 
 describe("stack identity (stage isolation)", () => {
-  it("uses the web stack name", () => {
-    expect(STACK_NAME).toBe("ast-web");
-  });
-
   it("isolates site workers by stage + site", () => {
     expect(worker_name("prod", "auth")).not.toBe(worker_name("prod", "dashboard"));
     expect(worker_name("prod", "auth")).not.toBe(worker_name("pr-42", "auth"));

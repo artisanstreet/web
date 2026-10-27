@@ -6,8 +6,8 @@ export {
   TransportFailure,
   error_shape,
   to_legacy_error,
-} from "./api-error.ts";
-export type { ApiErrorShape, BrowserApiError } from "./api-error.ts";
+} from "./api/error.ts";
+export type { ApiErrorShape, BrowserApiError } from "./api/error.ts";
 export {
   api_get,
   api_post,
@@ -16,8 +16,8 @@ export {
   issue_grant_effect,
   login_status_effect,
   strict_options,
-} from "./api-effect.ts";
-export type { FetchLike, HttpSeam } from "./api-effect.ts";
+} from "./api/effect.ts";
+export type { FetchLike, HttpSeam } from "./api/effect.ts";
 export { run_promise, run_effect } from "./run-promise.ts";
 export {
   CoreApi,

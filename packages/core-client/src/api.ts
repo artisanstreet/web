@@ -16,7 +16,7 @@
 // - Ownership is server-derived: this client never sends accountId to
 //   claim scope, and never puts tokens in URLs or logs.
 //
-// Effect lies underneath (`./api-effect.ts`): `get`/`post` run an
+// Effect lies underneath (`./api/effect.ts`): `get`/`post` run an
 // Effect (`api_get`/`api_post` with typed `ApiFailure`/`TransportFailure`/
 // `DecodeFailure` + `Schedule` retry on idempotent GETs) and collapse to a
 // Promise ONLY here — the single `Effect.runPromise` boundary for pages.
@@ -25,13 +25,13 @@
 import { Either, Schema } from "effect";
 import { ArrayFormatter, isParseError } from "effect/ParseResult";
 import * as C from "./contract-v1.ts";
-import { ApiError, ApiFailure } from "./api-error.ts";
+import { ApiError, ApiFailure } from "./api/error.ts";
 import { run_promise } from "./run-promise.ts";
-import { api_get, api_post, decode_lenient as decode_lenient_eff, encode_strict as encode_strict_eff, issue_grant_effect, login_status_effect, strict_options, type FetchLike, type HttpSeam } from "./api-effect.ts";
+import { api_get, api_post, decode_lenient as decode_lenient_eff, encode_strict as encode_strict_eff, issue_grant_effect, login_status_effect, strict_options, type FetchLike, type HttpSeam } from "./api/effect.ts";
 
 export { ApiError };
-export type { FetchLike, HttpSeam } from "./api-effect.ts";
-export type { ApiErrorShape } from "./api-error.ts";
+export type { FetchLike, HttpSeam } from "./api/effect.ts";
+export type { ApiErrorShape } from "./api/error.ts";
 
 /** Encode a request body strictly; throws on unknown fields. */
 export function encode_strict<A, I>(schema: Schema.Schema<A, I>, value: A): I {

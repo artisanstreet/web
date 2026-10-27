@@ -8,7 +8,7 @@
   "scripts": {
     "typecheck": "pnpm -r run typecheck",
     "test": "pnpm -r --filter './apps/*' --filter './packages/core-client' --filter './infra' run test",
-    "build": "pnpm -r run build"
+    "build": "varlock run --inject vars -- pnpm -r run build"
   },
   "devDependencies": {
     "typescript": "7.1.0-beta",
