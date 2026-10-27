@@ -3,7 +3,7 @@
 // button. Unknown/expired tokens map to a generic message (no account oracle).
 
 import { describe, expect, it } from "vitest";
-import { ApiError, CoreApi } from "@artisanstreet/core-client";
+import { CoreApi } from "@artisanstreet/core-client";
 
 const REQUEST_ID = `logreq_01K${"A".repeat(23)}`;
 
@@ -31,15 +31,8 @@ describe("approval scanner safety", () => {
         { status: 401 },
       )) as typeof fetch;
     const api = new CoreApi("", { fetch_impl });
-    try {
-      await api.consume_magic_link("wrong-token");
-      expect.unreachable();
-    } catch (e) {
-      expect(e).toBeInstanceOf(ApiError);
-      const err = e as ApiError;
-      expect(err.message).toMatch(/invalid or expired/i);
-      expect(err.message).not.toMatch(/acct_|@example/);
-    }
+    await expect(api.consume_magic_link("wrong-token")).rejects.toThrow(/invalid or expired/i);
+    await expect(api.consume_magic_link("wrong-token")).rejects.not.toThrow(/acct_|@example/);
   });
 
   it("expired consume returns expired status for the resend flow", async () => {

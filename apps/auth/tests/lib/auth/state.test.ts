@@ -3,7 +3,7 @@ import {
   finalize_effect,
   next_login_state,
   type LoginState,
-} from "../src/lib/auth-machine.ts";
+} from "../../../src/lib/auth/state.ts";
 import { Effect } from "effect";
 
 const base: LoginState = {

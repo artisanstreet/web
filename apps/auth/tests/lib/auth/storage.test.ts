@@ -5,7 +5,7 @@ import {
   clear_request_secret,
   load_request_secret,
   store_request_secret,
-} from "../src/lib/auth-storage.ts";
+} from "../../../src/lib/auth/storage.ts";
 
 const REQUEST_ID = `logreq_01K${"A".repeat(23)}`;
 

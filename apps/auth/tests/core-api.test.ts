@@ -4,8 +4,8 @@
 // Core test-mail adapter.
 
 import { describe, expect, it } from "vitest";
+import { Either } from "effect";
 import {
-  ApiError,
   C,
   CoreApi,
   decode_lenient,
@@ -80,15 +80,14 @@ describe("core api fixtures", () => {
   });
 
   it("humanizes validation errors without leaking internals", () => {
-    const err = (() => {
-      try {
-        decode_strict(MagicRequest, { email: "not-an-email" });
-        return new Error("unreachable");
-      } catch (e) {
-        return e;
-      }
-    })();
-    expect(humanize_validation_error(err)).toBe("Enter a valid email address.");
+    const decoded = Either.try({
+      try: () => decode_strict(MagicRequest, { email: "not-an-email" }),
+      catch: (e) => e,
+    });
+    expect(decoded._tag).toBe("Left");
+    if (decoded._tag === "Left") {
+      expect(humanize_validation_error(decoded.left)).toBe("Enter a valid email address.");
+    }
   });
 
   it("surfaces generic API errors with request_id and safe message", async () => {
@@ -98,15 +97,10 @@ describe("core api fixtures", () => {
         { status: 400 },
       )) as typeof fetch;
     const api = new CoreApi("", { fetch_impl });
-    try {
-      await api.request_magic_link("a@example.com");
-      expect.unreachable();
-    } catch (e) {
-      expect(e).toBeInstanceOf(ApiError);
-      const api_err = e as ApiError;
-      expect(api_err.request_id).toBe("r1");
-      expect(api_err.message).toContain("cannot receive mail");
-    }
+    await expect(api.request_magic_link("a@example.com")).rejects.toMatchObject({
+      request_id: "r1",
+    });
+    await expect(api.request_magic_link("a@example.com")).rejects.toThrow(/cannot receive mail/);
   });
 
   it("consume posts the email token explicitly (never via GET)", async () => {
