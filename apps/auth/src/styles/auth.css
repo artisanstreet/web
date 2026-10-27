@@ -57,7 +57,6 @@ body {
 }
 
 .home-signin {
-  --ink-dim: var(--home-foreground);
   width: 100%;
   max-width: 26rem;
   display: grid;
