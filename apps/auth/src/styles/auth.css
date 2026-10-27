@@ -20,7 +20,6 @@ body {
 .home-canvas {
   --home-background: var(--frame);
   --home-foreground: var(--white);
-  --home-card-background: var(--bg);
   --pearl-base: oklch(0.224 0.022 285);
   --pearl-pink: oklch(0.67 0.065 345);
   --pearl-lilac: oklch(0.68 0.055 300);
@@ -57,12 +56,29 @@ body {
   padding: var(--sp-8);
 }
 
-.home-card {
+.home-signin {
+  --ink-dim: var(--home-foreground);
   width: 100%;
   max-width: 26rem;
-  height: min(26rem, 60dvh);
-  background: var(--home-card-background);
-  border-radius: var(--radius-lg);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: var(--sp-3);
+}
+
+.home-signin .art-field {
+  min-width: 0;
+  margin: 0;
+}
+
+.home-signin .art-input {
+  width: 100%;
+  min-width: 0;
+}
+
+.home-signin .home-continue {
+  width: 2.75rem;
+  padding: 0;
 }
 
 .home-shimmer {
@@ -85,7 +101,6 @@ body {
   .home-canvas {
     --home-background: var(--white);
     --home-foreground: var(--black);
-    --home-card-background: var(--white);
     --pearl-base: oklch(0.975 0.012 345);
     --pearl-pink: oklch(0.8 0.055 345);
     --pearl-lilac: oklch(0.82 0.05 300);
