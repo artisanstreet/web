@@ -18,30 +18,41 @@ body {
 }
 
 .home-canvas {
+  --home-background: var(--frame);
+  --pearl-pink: oklch(0.88 0.075 345);
+  --pearl-green: oklch(0.9 0.065 155);
+  --pearl-white: oklch(0.985 0.006 100);
   height: 100vh;
   height: 100dvh;
   display: grid;
   grid-template-columns: minmax(0, 3.5fr) minmax(0, 2.5fr);
-  background: var(--frame);
+  background: var(--home-background);
   overflow: hidden;
 }
 
 .home-shimmer {
-  --shimmer-start: oklch(0.2239086 0.0488629 274.8954);
-  --shimmer-highlight: oklch(0.3823832 0.1142766 270.6385);
   grid-column: 2;
   width: 100%;
   height: 100%;
   min-width: 0;
   min-height: 0;
   display: block;
-  background: var(--shimmer-start);
+  background: var(--home-background);
   pointer-events: none;
   image-rendering: pixelated;
 }
 
 .home-shimmer[data-state="fallback"] {
-  background: linear-gradient(180deg, var(--shimmer-start), var(--shimmer-highlight));
+  background: linear-gradient(160deg,
+    color-mix(in oklch, var(--pearl-pink) 25%, var(--home-background)),
+    var(--home-background) 45%,
+    color-mix(in oklch, var(--pearl-green) 25%, var(--home-background)));
+}
+
+@media (prefers-color-scheme: light) {
+  .home-canvas {
+    --home-background: var(--white);
+  }
 }
 
 a {

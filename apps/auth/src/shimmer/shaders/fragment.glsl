@@ -1,5 +1,6 @@
 #version 300 es
 // Copyright (C) 2026 The Helium Authors. GPL-3.0-only; see ../license.txt.
+// Artisan adaptation: thin-film phase drives a pink/mint pearlescent palette.
 
 precision highp float;
 
@@ -10,8 +11,11 @@ uniform float u_gradient_top;
 uniform float u_gradient_vertical_span;
 uniform float u_inverse_gradient_denominator;
 
-uniform vec3 u_start_color;
-uniform vec3 u_highlight_delta;
+uniform vec3 u_base_color;
+uniform vec3 u_pearl_pink;
+uniform vec3 u_pearl_green;
+uniform vec3 u_pearl_white;
+uniform float u_light_mode;
 uniform float u_grain_alpha;
 uniform float u_grain_luminance;
 uniform float u_grain_contrast;
@@ -71,9 +75,21 @@ void main() {
     float gradient_position = clamp01(
         dot(gradient_offset, gradient_axis) * u_inverse_gradient_denominator
     );
-    vec3 color = u_start_color + u_highlight_delta * (
-        gradientHighlightAmount(gradient_position) * v_highlight_strength
+    float highlight = gradientHighlightAmount(gradient_position);
+    float film_thickness = 340.0 + gradient_position * 180.0 + v_band.y * 120.0;
+    float view_cosine = mix(0.65, 1.0, highlight);
+    float optical_path = 2.0 * 1.45 * film_thickness * view_cosine;
+    vec3 interference = 0.5 + 0.5 * cos(
+        6.2831853 * optical_path / vec3(650.0, 530.0, 460.0)
     );
+    float pink_amount = smoothstep(-0.4, 0.4,
+        (interference.r + interference.b) * 0.5 - interference.g);
+    vec3 pearl = mix(u_pearl_green, u_pearl_pink, pink_amount);
+    float white_amount = pow(highlight, 4.0) * 0.72;
+    pearl = mix(pearl, u_pearl_white, white_amount);
+    float reflection = mix(0.10, 0.74, pow(highlight, 1.6));
+    reflection = mix(reflection, mix(0.34, 0.86, highlight), u_light_mode);
+    vec3 color = mix(u_base_color, pearl, reflection * v_highlight_strength);
 
     ivec2 grain_position = min(
         ivec2(mod(css_position, GRAIN_SIZE)),

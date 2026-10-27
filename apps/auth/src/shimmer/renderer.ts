@@ -45,12 +45,13 @@ const create_grain = () => {
   return data;
 };
 
-const animate = (canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, program: WebGLProgram) => {
+const animate = (canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, program: WebGLProgram, color_context: CanvasRenderingContext2D) => {
   const uniform = (name: string) => gl.getUniformLocation(program, name);
   const set_float = (name: string, value: number) => gl.uniform1f(uniform(name), value);
   const wave_uniform = uniform("u_wave_phase");
   const secondary_uniform = uniform("u_secondary_wave_phase");
   const motion = matchMedia("(prefers-reduced-motion: reduce)");
+  const theme = matchMedia("(prefers-color-scheme: light)");
   let frame = 0;
   let previous_time: number | null = null;
   let wave_phase = 0;
@@ -76,6 +77,23 @@ const animate = (canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, program:
     draw(performance.now());
   };
 
+  const update_colors = () => {
+    const styles = getComputedStyle(canvas);
+    for (const [name, token] of [
+      ["u_base_color", "--home-background"],
+      ["u_pearl_pink", "--pearl-pink"],
+      ["u_pearl_green", "--pearl-green"],
+      ["u_pearl_white", "--pearl-white"],
+    ] as const) {
+      color_context.fillStyle = styles.getPropertyValue(token).trim();
+      color_context.fillRect(0, 0, 1, 1);
+      const pixel = color_context.getImageData(0, 0, 1, 1).data;
+      gl.uniform3f(uniform(name), pixel[0]! / 255, pixel[1]! / 255, pixel[2]! / 255);
+    }
+    set_float("u_light_mode", theme.matches ? 1 : 0);
+    refresh();
+  };
+
   const resize = () => {
     const { width, height } = canvas.getBoundingClientRect();
     const minimum = Math.max(1, Math.ceil(width / 120));
@@ -98,13 +116,16 @@ const animate = (canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, program:
   const observer = new ResizeObserver(resize);
   observer.observe(canvas);
   motion.addEventListener("change", refresh);
+  theme.addEventListener("change", update_colors);
   document.addEventListener("visibilitychange", refresh);
+  update_colors();
   resize();
 
   return () => {
     cancelAnimationFrame(frame);
     observer.disconnect();
     motion.removeEventListener("change", refresh);
+    theme.removeEventListener("change", update_colors);
     document.removeEventListener("visibilitychange", refresh);
   };
 };
@@ -117,6 +138,8 @@ export const mount_shimmer = (canvas: HTMLCanvasElement) => {
     });
     if (context === null) return yield* Effect.fail(new ShaderUnavailable({ message: "WebGL 2 unavailable" }));
     const gl = context;
+    const color_context = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+    if (color_context === null) return yield* Effect.fail(new ShaderUnavailable({ message: "Color conversion unavailable" }));
     const vertex = yield* compile_shader(gl, gl.VERTEX_SHADER, vertex_source);
     const fragment = yield* compile_shader(gl, gl.FRAGMENT_SHADER, fragment_source);
     const program = yield* resource(() => gl.createProgram(), (value) => gl.deleteProgram(value));
@@ -145,7 +168,7 @@ export const mount_shimmer = (canvas: HTMLCanvasElement) => {
     const floats = {
       u_inverse_dpr: 1,
       u_intro_active: 0,
-      u_alpha: 0.7,
+      u_alpha: 1,
       u_intro_alpha: 1,
       u_gradient_band_width: 0.48,
       u_gradient_min_stop: 0.14,
@@ -154,17 +177,15 @@ export const mount_shimmer = (canvas: HTMLCanvasElement) => {
       u_idle_secondary_stripe_phase: 1.28,
       u_idle_primary_amplitude: 0.19,
       u_idle_secondary_amplitude: 0.055,
-      u_grain_alpha: 0.15,
-      u_grain_luminance: 144,
-      u_grain_contrast: 64,
-      u_grain_saturation: 32,
+      u_grain_alpha: 0.08,
+      u_grain_luminance: 128,
+      u_grain_contrast: 40,
+      u_grain_saturation: 8,
     };
     for (const [name, value] of Object.entries(floats)) gl.uniform1f(gl.getUniformLocation(program, name), value);
-    gl.uniform3f(gl.getUniformLocation(program, "u_start_color"), 21 / 255, 25 / 255, 50 / 255);
-    gl.uniform3f(gl.getUniformLocation(program, "u_highlight_delta"), 24 / 255, 35 / 255, 77 / 255);
     gl.clearColor(0, 0, 0, 0);
     yield* Effect.acquireRelease(
-      Effect.sync(() => animate(canvas, gl, program)),
+      Effect.sync(() => animate(canvas, gl, program, color_context)),
       (dispose) => Effect.sync(dispose),
     );
     yield* Effect.never;
