@@ -1,3 +1,4 @@
+import stylex from "@stylexjs/unplugin";
 import { defineConfig } from "vite-plus";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
@@ -23,6 +24,16 @@ export default defineConfig({
     target: "es2022",
   },
   plugins: [
+    {
+      ...stylex.vite({
+        useCSSLayers: false,
+        dev: process.env.NODE_ENV !== "production",
+        runtimeInjection: false,
+        devMode: "css-only",
+        unstable_moduleResolution: { type: "commonJS" },
+      }),
+      ...(process.env.NODE_ENV === "test" ? { configureServer: undefined } : {}),
+    },
     tanstackStart(),
     viteReact({
       babel: {

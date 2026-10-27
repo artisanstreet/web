@@ -11,8 +11,9 @@
     "build": "varlock run --inject vars -- pnpm -r run build"
   },
   "devDependencies": {
-    "typescript": "7.1.0-beta",
+    "@stylexjs/unplugin": "^0.19.1",
     "tsrs": "0.20.0-ts7.1.0-beta",
+    "typescript": "7.1.0-beta",
     "varlock": "1.23.0",
     "vitest": "5.0.5"
   },

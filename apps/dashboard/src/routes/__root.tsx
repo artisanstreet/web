@@ -1,3 +1,4 @@
+import { StyleXDev } from "@artisanstreet/ui/stylex-dev";
 import { HeadContent, Link, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 import { QueryClientProvider } from "@tanstack/react-query";
 import * as React from "react";
@@ -110,6 +111,7 @@ function RootDocument({ children }: Readonly<{ children: React.ReactNode }>) {
     <html lang="en">
       <head>
         <HeadContent />
+        <StyleXDev />
       </head>
       <body>
         {children}

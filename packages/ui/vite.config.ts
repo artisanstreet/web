@@ -1,6 +1,19 @@
+import stylex from "@stylexjs/unplugin";
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
+  plugins: [
+    {
+      ...stylex.vite({
+        useCSSLayers: false,
+        dev: process.env.NODE_ENV !== "production",
+        runtimeInjection: false,
+        devMode: "css-only",
+        unstable_moduleResolution: { type: "commonJS" },
+      }),
+      ...(process.env.NODE_ENV === "test" ? { configureServer: undefined } : {}),
+    },
+  ],
   build: {
     lib: {
       entry: "src/index.ts",

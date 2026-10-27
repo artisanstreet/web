@@ -8,11 +8,15 @@
     ".": "./src/index.ts",
     "./tokens.css": "./src/styles/tokens.css",
     "./base.css": "./src/styles/base.css",
-    "./surfaces.css": "./src/styles/surfaces.css"
+    "./surfaces.css": "./src/styles/surfaces.css",
+    "./stylex-dev": "./src/stylex-dev.tsx"
   },
   "main": "./src/index.ts",
   "types": "./src/index.ts",
-  "files": ["dist", "src"],
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "typecheck": "tsrs --noEmit",
     "test": "vp test run",
@@ -20,6 +24,7 @@
   },
   "dependencies": {
     "@base-ui/react": "1.9.0",
+    "@stylexjs/stylex": "^0.19.1",
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },
