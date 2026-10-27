@@ -7,7 +7,7 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   return (
     <main className="home-canvas">
-      <div className="home-card" />
+      <div className="home-card inset-shadow" />
     </main>
   );
 }
