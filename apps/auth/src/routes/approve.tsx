@@ -1,3 +1,5 @@
+import * as stylex from "@stylexjs/stylex";
+import { shell_styles } from "../styles/shell.ts";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import * as React from "react";
@@ -21,7 +23,11 @@ export const Route = createFileRoute("/approve")({
 
 type ApproveOutcome =
   | { readonly _tag: "Idle" }
-  | { readonly _tag: "ApprovedSameTab"; readonly request_id: string; readonly totp_required: boolean }
+  | {
+      readonly _tag: "ApprovedSameTab";
+      readonly request_id: string;
+      readonly totp_required: boolean;
+    }
   | { readonly _tag: "ApprovedOtherTab" }
   | { readonly _tag: "Expired" }
   | { readonly _tag: "Failed"; readonly message: string };
@@ -98,7 +104,8 @@ function ApprovePage() {
           opts: {
             request_secret: secret,
             totp_code: !use_recovery && totp_value.trim() ? totp_value.trim() : undefined,
-            recovery_code: use_recovery && recovery_value.trim() ? recovery_value.trim() : undefined,
+            recovery_code:
+              use_recovery && recovery_value.trim() ? recovery_value.trim() : undefined,
           },
         }),
       );
@@ -126,30 +133,31 @@ function ApprovePage() {
 
   return (
     <section aria-labelledby="approve-title">
-      <h1 id="approve-title" className="auth-title">
+      <h1 id="approve-title" {...stylex.props(shell_styles.title)}>
         Approve this sign-in?
       </h1>
-      <p className="auth-lede">
-        This approves the sign-in on the browser that requested it. Only approve if you just tried to
-        sign in — otherwise ignore this page.
+      <p {...stylex.props(shell_styles.lede)}>
+        This approves the sign-in on the browser that requested it. Only approve if you just tried
+        to sign in — otherwise ignore this page.
       </p>
 
       <div>
         {outcome._tag === "Idle" ? (
           token === null ? (
             <>
-              <p className="auth-status" role="status">
+              <p {...stylex.props(shell_styles.status)} role="status">
                 This approval link is missing its token, so there is nothing to approve.
               </p>
-              <p className="auth-status">
-                <a href="/">Request a new sign-in link</a> and open the fresh approval link from your
-                email.
+              <p {...stylex.props(shell_styles.status)}>
+                <a href="/">Request a new sign-in link</a> and open the fresh approval link from
+                your email.
               </p>
             </>
           ) : (
             <>
               <Button
                 variant="primary"
+                xstyle={shell_styles.primary_action}
                 type="button"
                 disabled={consume_mutation.isPending}
                 onClick={approve}
@@ -157,7 +165,7 @@ function ApprovePage() {
                 {consume_mutation.isPending ? "Approving…" : "Approve this request"}
               </Button>
               {approve_error ? (
-                <p className="auth-error" role="alert">
+                <p {...stylex.props(shell_styles.error)} role="alert">
                   {approve_error}
                 </p>
               ) : null}
@@ -167,7 +175,7 @@ function ApprovePage() {
 
         {outcome._tag === "ApprovedSameTab" ? (
           <>
-            <p className="auth-status" data-tone="ok" role="status">
+            <p {...stylex.props(shell_styles.status, shell_styles.ok)} role="status">
               Approved. This tab started the request — you can finish sign-in here.
             </p>
             {outcome.totp_required ? (
@@ -192,9 +200,10 @@ function ApprovePage() {
                     onValueChange={set_totp_value}
                   />
                 )}
-                <div className="auth-row">
+                <div {...stylex.props(shell_styles.row)}>
                   <Button
                     variant="secondary"
+                    xstyle={shell_styles.row_action}
                     type="button"
                     onClick={() => set_use_recovery((v) => !v)}
                   >
@@ -205,6 +214,7 @@ function ApprovePage() {
             ) : null}
             <Button
               variant="primary"
+              xstyle={shell_styles.primary_action}
               type="button"
               disabled={finish_mutation.isPending}
               onClick={() => finish_mutation.mutate()}
@@ -212,7 +222,7 @@ function ApprovePage() {
               {finish_mutation.isPending ? "Finishing…" : "Finish sign-in"}
             </Button>
             {finish_error ? (
-              <p className="auth-error" role="alert">
+              <p {...stylex.props(shell_styles.error)} role="alert">
                 {finish_error}
               </p>
             ) : null}
@@ -220,7 +230,7 @@ function ApprovePage() {
         ) : null}
 
         {outcome._tag === "ApprovedOtherTab" ? (
-          <p className="auth-status" role="status">
+          <p {...stylex.props(shell_styles.status)} role="status">
             Approved. This tab did not start the sign-in: finish in the tab that requested the link
             — it picks up this approval on its own. If you requested the link on a different device,
             finish there. You can return to Artisan.
@@ -229,17 +239,17 @@ function ApprovePage() {
 
         {outcome._tag === "Expired" ? (
           <>
-            <p className="auth-status" data-tone="err" role="status">
+            <p {...stylex.props(shell_styles.status, shell_styles.err)} role="status">
               This link expired. Request a fresh one.
             </p>
-            <p className="auth-status">
+            <p {...stylex.props(shell_styles.status)}>
               <a href="/">Request a new sign-in link</a>
             </p>
           </>
         ) : null}
 
         {outcome._tag === "Failed" ? (
-          <p className="auth-error" role="alert">
+          <p {...stylex.props(shell_styles.error)} role="alert">
             {outcome.message}
           </p>
         ) : null}

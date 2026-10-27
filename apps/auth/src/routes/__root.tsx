@@ -1,4 +1,13 @@
-import { HeadContent, Outlet, Scripts, createRootRoute, useRouterState } from "@tanstack/react-router";
+import * as stylex from "@stylexjs/stylex";
+import { shell_styles } from "../styles/shell.ts";
+import { StyleXDev } from "@artisanstreet/ui/stylex-dev";
+import {
+  HeadContent,
+  Outlet,
+  Scripts,
+  createRootRoute,
+  useRouterState,
+} from "@tanstack/react-router";
 import { QueryClientProvider } from "@tanstack/react-query";
 import * as React from "react";
 import "@artisanstreet/ui/tokens.css";
@@ -39,19 +48,19 @@ function RootComponent() {
         {is_home ? (
           <Outlet />
         ) : (
-          <div className="auth-shell">
-            <a className="skip-link" href="#auth-main">
+          <div {...stylex.props(shell_styles.shell)}>
+            <a {...stylex.props(shell_styles.skip_link)} href="#auth-main">
               Skip to sign-in
             </a>
-            <header className="auth-topbar">
-              <a className="auth-brand" href="/">
+            <header {...stylex.props(shell_styles.topbar)}>
+              <a {...stylex.props(shell_styles.brand)} href="/">
                 Artisan
               </a>
             </header>
-            <main id="auth-main" className="auth-main">
+            <main id="auth-main" {...stylex.props(shell_styles.main)}>
               <Outlet />
             </main>
-            <footer className="auth-footer">
+            <footer {...stylex.props(shell_styles.footer)}>
               Sessions last 30 days and can be revoked anytime from the dashboard.
             </footer>
           </div>
@@ -66,6 +75,7 @@ function RootDocument({ children }: Readonly<{ children: React.ReactNode }>) {
     <html lang="en">
       <head>
         <HeadContent />
+        <StyleXDev />
       </head>
       <body>
         {children}

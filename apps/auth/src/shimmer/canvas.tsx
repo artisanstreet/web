@@ -1,3 +1,5 @@
+import * as stylex from "@stylexjs/stylex";
+import { home_styles } from "../styles/home.ts";
 import { Effect, Fiber } from "effect";
 import { useEffect, useRef } from "react";
 import { mount_shimmer } from "./renderer.ts";
@@ -14,7 +16,9 @@ export function GradientShimmer() {
       Effect.runFork(Fiber.interrupt(fiber));
       canvas.dataset.state = "fallback";
     };
-    const on_restored = () => { fiber = Effect.runFork(mount_shimmer(canvas)); };
+    const on_restored = () => {
+      fiber = Effect.runFork(mount_shimmer(canvas));
+    };
     canvas.addEventListener("webglcontextlost", on_lost);
     canvas.addEventListener("webglcontextrestored", on_restored);
     return () => {
@@ -24,5 +28,5 @@ export function GradientShimmer() {
     };
   }, []);
 
-  return <canvas ref={canvas_ref} className="home-shimmer" aria-hidden="true" />;
+  return <canvas ref={canvas_ref} {...stylex.props(home_styles.shimmer)} aria-hidden="true" />;
 }

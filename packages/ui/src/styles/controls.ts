@@ -1,0 +1,111 @@
+import * as stylex from "@stylexjs/stylex";
+
+export const button_styles = stylex.create({
+  base: {
+    fontFamily: "var(--font-sans)",
+    fontWeight: 600,
+    letterSpacing: "var(--tracking-sans)",
+    borderRadius: "var(--radius-md)",
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "transparent",
+    cursor: { default: "pointer", ":disabled": "not-allowed" },
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "var(--sp-2)",
+    opacity: { ":disabled": 1 },
+    boxShadow: { ":disabled": "none" },
+    outline: { ":focus-visible": "2px solid var(--focus)" },
+    outlineOffset: { ":focus-visible": 2 },
+  },
+  sm: {
+    paddingBlock: "var(--sp-1)",
+    paddingInline: "var(--sp-3)",
+    fontSize: "0.85rem",
+    minHeight: { default: "2rem", "@media (pointer: coarse)": "2.75rem" },
+  },
+  md: {
+    paddingBlock: "var(--sp-2)",
+    paddingInline: "var(--sp-4)",
+    fontSize: "0.95rem",
+    minHeight: "2.75rem",
+  },
+  lg: {
+    paddingBlock: "var(--sp-3)",
+    paddingInline: "var(--sp-5)",
+    fontSize: "1rem",
+    minHeight: "3rem",
+  },
+  primary: {
+    backgroundColor: {
+      default: "var(--primary)",
+      ":hover": "var(--primary-hover)",
+      ":active": "var(--primary-active)",
+      ":disabled": "var(--disabled)",
+    },
+    color: { default: "var(--primary-ink)", ":disabled": "var(--disabled-ink)" },
+    borderColor: { default: "var(--primary-edge)", ":disabled": "var(--disabled-edge)" },
+  },
+  secondary: {
+    backgroundColor: {
+      default: "var(--panel)",
+      ":hover": "var(--hover)",
+      ":active": "var(--pressed)",
+      ":disabled": "var(--disabled)",
+    },
+    color: { default: "var(--ink)", ":disabled": "var(--disabled-ink)" },
+    borderColor: { default: "var(--panel-edge)", ":disabled": "var(--disabled-edge)" },
+  },
+  ghost: {
+    backgroundColor: "transparent",
+    color: { default: "var(--link)", ":disabled": "var(--disabled-ink)" },
+  },
+  danger: {
+    backgroundColor: {
+      default: "var(--danger)",
+      ":hover": "var(--danger-hover)",
+      ":active": "var(--danger-active)",
+      ":disabled": "var(--disabled)",
+    },
+    color: { default: "var(--danger-ink)", ":disabled": "var(--disabled-ink)" },
+    borderColor: { default: "var(--danger-edge)", ":disabled": "var(--disabled-edge)" },
+  },
+});
+
+export const field_styles = stylex.create({
+  root: { display: "grid", gap: "var(--sp-2)", margin: "0 0 var(--sp-4)" },
+  label: {
+    fontSize: "0.875rem",
+    lineHeight: "1.25rem",
+    letterSpacing: "var(--tracking-sans)",
+    color: "var(--ink-dim)",
+  },
+  input: {
+    fontFamily: "var(--font-sans)",
+    fontSize: "1rem",
+    lineHeight: "1.25rem",
+    letterSpacing: "var(--tracking-sans)",
+    backgroundColor: "var(--bg-raised)",
+    color: { default: "var(--ink)", "::placeholder": "var(--ink-dim)" },
+    opacity: { "::placeholder": 1 },
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "var(--control-edge)",
+    borderRadius: "var(--radius-md)",
+    paddingBlock: "var(--sp-2)",
+    paddingInline: "var(--sp-3)",
+    minHeight: "2.75rem",
+    outline: { ":focus-visible": "2px solid var(--focus)" },
+    outlineOffset: { ":focus-visible": 2 },
+  },
+  card: {
+    borderWidth: 0,
+    backgroundColor: "var(--bg)",
+    caretColor: "var(--muted)",
+    boxShadow: "var(--shadow-card)",
+    outline: { ":focus-visible": "none" },
+  },
+  hint: { fontSize: "0.85rem", color: "var(--muted)" },
+  error: { fontSize: "0.85rem", color: "var(--err)" },
+});

@@ -1,3 +1,5 @@
+import * as stylex from "@stylexjs/stylex";
+import { button_styles } from "./styles/controls.ts";
 import * as React from "react";
 import { Button as BaseButton } from "@base-ui/react/button";
 
@@ -7,18 +9,29 @@ export type ButtonSize = "sm" | "md" | "lg";
 export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "color"> {
   readonly variant?: ButtonVariant;
   readonly size?: ButtonSize;
+  readonly xstyle?: stylex.StyleXStyles;
 }
-
-const class_for = (variant: ButtonVariant, size: ButtonSize): string =>
-  `art-button art-button--${variant} art-button--${size}`;
 
 export const Button: React.FC<ButtonProps> = ({
   variant = "primary",
   size = "md",
   className,
+  xstyle,
   type,
   ...rest
 }: ButtonProps) => {
-  const merged = [class_for(variant, size), className].filter(Boolean).join(" ");
-  return <BaseButton className={merged} type={type ?? "button"} {...rest} />;
+  const compiled = stylex.props(
+    button_styles.base,
+    button_styles[size],
+    button_styles[variant],
+    xstyle,
+  );
+  return (
+    <BaseButton
+      {...compiled}
+      className={[compiled.className, className].filter(Boolean).join(" ")}
+      type={type ?? "button"}
+      {...rest}
+    />
+  );
 };

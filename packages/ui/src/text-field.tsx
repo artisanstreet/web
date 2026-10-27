@@ -1,8 +1,12 @@
+import * as stylex from "@stylexjs/stylex";
+import { field_styles } from "./styles/controls.ts";
 import * as React from "react";
 import { Field as BaseField } from "@base-ui/react/field";
 
 export interface TextFieldProps {
   readonly label: string;
+  readonly xstyle?: stylex.StyleXStyles;
+  readonly input_style?: stylex.StyleXStyles;
   readonly variant?: "default" | "card";
   readonly value?: string;
   readonly defaultValue?: string;
@@ -21,6 +25,8 @@ export interface TextFieldProps {
 
 export const TextField: React.FC<TextFieldProps> = ({
   label,
+  xstyle,
+  input_style,
   variant = "default",
   value,
   defaultValue,
@@ -42,8 +48,8 @@ export const TextField: React.FC<TextFieldProps> = ({
     onValueChange?.(event.target.value);
   };
   return (
-    <BaseField.Root className="art-field" invalid={Boolean(error)}>
-      <BaseField.Label htmlFor={control_id} className="art-field-label">
+    <BaseField.Root {...stylex.props(field_styles.root, xstyle)} invalid={Boolean(error)}>
+      <BaseField.Label htmlFor={control_id} {...stylex.props(field_styles.label)}>
         {label}
         {required ? " *" : ""}
       </BaseField.Label>
@@ -59,10 +65,14 @@ export const TextField: React.FC<TextFieldProps> = ({
         autoComplete={autoComplete}
         inputMode={inputMode}
         placeholder={placeholder}
-        className={variant === "card" ? "art-input art-input--card card" : "art-input"}
+        {...stylex.props(field_styles.input, variant === "card" && field_styles.card, input_style)}
       />
-      {description ? <BaseField.Description className="art-field-hint">{description}</BaseField.Description> : null}
-      {error ? <p className="art-field-error">{error}</p> : null}
+      {description ? (
+        <BaseField.Description {...stylex.props(field_styles.hint)}>
+          {description}
+        </BaseField.Description>
+      ) : null}
+      {error ? <p {...stylex.props(field_styles.error)}>{error}</p> : null}
     </BaseField.Root>
   );
 };

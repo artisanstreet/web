@@ -1,5 +1,21 @@
+import * as stylex from "@stylexjs/stylex";
+import { Button } from "./button.tsx";
 import * as React from "react";
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
+
+const styles = stylex.create({
+  close: {
+    position: "absolute",
+    top: "var(--sp-3)",
+    right: "var(--sp-3)",
+    minWidth: "2.75rem",
+    minHeight: "2.75rem",
+    paddingBlock: 0,
+    paddingInline: 0,
+    fontSize: "1.25rem",
+    lineHeight: 1,
+  },
+});
 
 export interface DialogProps {
   readonly open?: boolean;
@@ -24,11 +40,13 @@ export const Dialog: React.FC<DialogProps> = ({
           <BaseDialog.Popup className="art-dialog">
             <BaseDialog.Title className="art-dialog-title">{title}</BaseDialog.Title>
             {description ? (
-              <BaseDialog.Description className="art-dialog-desc">{description}</BaseDialog.Description>
+              <BaseDialog.Description className="art-dialog-desc">
+                {description}
+              </BaseDialog.Description>
             ) : null}
             <div className="art-dialog-body">{children}</div>
             <BaseDialog.Close
-              className="art-button art-button--ghost art-button--sm art-dialog-close"
+              render={<Button variant="ghost" size="sm" xstyle={styles.close} />}
               aria-label="Close dialog"
             >
               ×
