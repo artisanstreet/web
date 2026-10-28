@@ -16,12 +16,18 @@ const styles = stylex.create({
     width: "3.625rem",
     pointerEvents: "none",
     backgroundImage:
-      "linear-gradient(180deg in oklch, var(--continue-pink), var(--continue-lilac))",
+      "linear-gradient(180deg in oklch, var(--continue-face-top), var(--continue-face-bottom))",
   },
   clip: (id: string) => ({ clipPath: `url("#${id}")` }),
   border: { display: "block", width: "100%", height: "100%", fill: "none" },
-  inner_ring: { stroke: "oklch(0.75 0.1 345)", strokeWidth: 4 },
-  outer_ring: { stroke: "oklch(0.72 0.1 300)", strokeWidth: 2 },
+  inner_ring: { strokeWidth: 4 },
+  outer_ring: { strokeWidth: 2 },
+  highlight_top: { stopColor: "color-mix(in oklch, var(--continue-face-top), oklch(1 0 0) 30%)" },
+  highlight_bottom: {
+    stopColor: "color-mix(in oklch, var(--continue-face-bottom), oklch(1 0 0) 8%)",
+  },
+  rim_top: { stopColor: "color-mix(in oklch, var(--continue-pink), oklch(0 0 0) 10%)" },
+  rim_bottom: { stopColor: "color-mix(in oklch, var(--continue-lilac), oklch(0 0 0) 14%)" },
 });
 
 export function AttachedAction() {
@@ -35,9 +41,39 @@ export function AttachedAction() {
             <clipPath id={clip_id} clipPathUnits="objectBoundingBox">
               <path d={silhouette} transform="scale(0.0172413793 0.0222222222)" />
             </clipPath>
+            <linearGradient
+              id={`${clip_id}-highlight`}
+              gradientUnits="userSpaceOnUse"
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="45"
+            >
+              <stop offset="0" {...stylex.props(styles.highlight_top)} />
+              <stop offset="1" {...stylex.props(styles.highlight_bottom)} />
+            </linearGradient>
+            <linearGradient
+              id={`${clip_id}-rim`}
+              gradientUnits="userSpaceOnUse"
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="45"
+            >
+              <stop offset="0" {...stylex.props(styles.rim_top)} />
+              <stop offset="1" {...stylex.props(styles.rim_bottom)} />
+            </linearGradient>
           </defs>
-          <path d={outer_edge} {...stylex.props(styles.inner_ring)} />
-          <path d={outer_edge} {...stylex.props(styles.outer_ring)} />
+          <path
+            d={outer_edge}
+            stroke={`url(#${clip_id}-highlight)`}
+            {...stylex.props(styles.inner_ring)}
+          />
+          <path
+            d={outer_edge}
+            stroke={`url(#${clip_id}-rim)`}
+            {...stylex.props(styles.outer_ring)}
+          />
         </svg>
       </span>
       <ArrowNarrowRight xstyle={home_styles.continue_icon} />

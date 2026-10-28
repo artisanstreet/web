@@ -3,6 +3,8 @@ import * as stylex from "@stylexjs/stylex";
 export const home_theme = stylex.defineVars({
   "--continue-pink": "oklch(0.6 0.145 345)",
   "--continue-lilac": "oklch(0.58 0.135 300)",
+  "--continue-face-top": "color-mix(in oklch, var(--continue-pink), oklch(1 0 0) 8%)",
+  "--continue-face-bottom": "color-mix(in oklch, var(--continue-lilac), oklch(0 0 0) 4%)",
   "--home-background": {
     default: "var(--frame)",
     "@media (prefers-color-scheme: light)": "var(--white)",

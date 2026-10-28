@@ -67,13 +67,14 @@ export const home_styles = stylex.create({
     outline: { default: "none", ":focus-visible": "3px solid var(--focus)" },
     outlineOffset: { default: 0, ":focus-visible": 3 },
     color: "oklch(1 0 0)",
+    filter: "drop-shadow(0 1px 2px oklch(0 0 0 / 0.15))",
   },
   continue_icon: {
     position: "relative",
     width: "1.875rem",
     height: "1.875rem",
     backgroundImage:
-      "linear-gradient(180deg in oklch, color-mix(in oklch, oklch(1 0 0) 75%, var(--continue-pink)), color-mix(in oklch, oklch(1 0 0) 75%, var(--continue-lilac)))",
+      "linear-gradient(180deg in oklch, color-mix(in oklch, oklch(1 0 0) 75%, var(--continue-face-top)), color-mix(in oklch, oklch(1 0 0) 75%, var(--continue-face-bottom)))",
     backgroundSize: `100% ${signin_control_height}`,
     backgroundPosition: "center",
   },
