@@ -1,9 +1,7 @@
 import * as stylex from "@stylexjs/stylex";
 import { home_styles } from "../styles/home.ts";
 import wordmark_url from "../assets/wordmark.svg?url";
-import { TextField } from "@artisanstreet/ui";
-import { AttachedAction } from "./action.tsx";
-import { Mail } from "../icons/mail.tsx";
+import { SignInForm } from "./form.tsx";
 import { GradientShimmer } from "../shimmer/canvas.tsx";
 
 export function HomePage() {
@@ -17,23 +15,7 @@ export function HomePage() {
         />
       </header>
       <div {...stylex.props(home_styles.content)}>
-        <div {...stylex.props(home_styles.signin)}>
-          <TextField
-            variant="bevel"
-            size="lg"
-            xstyle={home_styles.field}
-            input_style={home_styles.input}
-            leading_icon={<Mail size={20} />}
-            id="signin-email"
-            name="email"
-            label="Email"
-            hide_label
-            type="email"
-            autoComplete="email"
-            placeholder="you@artisan.email"
-          />
-          <AttachedAction />
-        </div>
+        <SignInForm />
       </div>
       <GradientShimmer />
     </main>

@@ -46,6 +46,14 @@ export const home_styles = stylex.create({
     gap: 0,
   },
   field: { minWidth: 0, margin: 0, position: "relative", zIndex: 1 },
+  feedback: {
+    position: "absolute",
+    top: "calc(100% + var(--sp-4))",
+    insetInline: 0,
+    color: "var(--muted)",
+    fontSize: "0.875rem",
+    lineHeight: "1.5rem",
+  },
   input: {
     width: "100%",
     minWidth: 0,

@@ -19,6 +19,8 @@ const styles = stylex.create({
     pointerEvents: "none",
   },
   border: { display: "block", width: "100%", height: "100%" },
+  glyph: { display: "block", width: "1.875rem", height: "1.875rem" },
+  loader: { color: "color-mix(in oklch, oklch(1 0 0) 75%, var(--continue-face-top))" },
   face_top: { stopColor: "var(--continue-face-top)" },
   face_middle: {
     stopColor: "color-mix(in oklch, var(--continue-face-top), var(--continue-face-bottom))",
@@ -30,11 +32,19 @@ const styles = stylex.create({
   rim_bottom: { stopColor: "color-mix(in oklch, var(--continue-face-bottom), oklch(0 0 0) 25%)" },
 });
 
-export function AttachedAction() {
+export function AttachedAction({ pending = false }: Readonly<{ pending?: boolean }>) {
   const clip_id = useId();
+  const loader_props = stylex.props(styles.glyph, styles.loader);
 
   return (
-    <Button variant="ghost" xstyle={home_styles.continue} aria-label="Continue">
+    <Button
+      variant="ghost"
+      xstyle={home_styles.continue}
+      type="submit"
+      disabled={pending}
+      aria-busy={pending}
+      aria-label={pending ? "Sending email" : "Continue"}
+    >
       <span {...stylex.props(styles.surface)} aria-hidden="true">
         <svg viewBox="0 0 58 45" {...stylex.props(styles.border)}>
           <defs>
@@ -83,7 +93,26 @@ export function AttachedAction() {
           </g>
         </svg>
       </span>
-      <ArrowNarrowRight xstyle={home_styles.continue_icon} />
+      <span {...stylex.props(home_styles.continue_icon)} aria-hidden="true">
+        <span className="t-icon-swap" data-state={pending ? "b" : "a"}>
+          <span className="t-icon" data-icon="a">
+            <ArrowNarrowRight xstyle={styles.glyph} />
+          </span>
+          <span className="t-icon" data-icon="b">
+            <svg
+              {...loader_props}
+              className={`${loader_props.className} signin-spinner`}
+              viewBox="0 0 30 30"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+            >
+              <path d="M15 6a9 9 0 1 1-9 9" />
+            </svg>
+          </span>
+        </span>
+      </span>
     </Button>
   );
 }
