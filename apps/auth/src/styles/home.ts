@@ -21,7 +21,7 @@ export const home_styles = stylex.create({
   },
   wordmark: {
     display: "block",
-    width: "4rem",
+    width: "5rem",
     aspectRatio: "310.804 / 512",
     backgroundColor: "currentColor",
     maskPosition: "center",
