@@ -53,7 +53,7 @@ export const home_styles = stylex.create({
     lineHeight: "1.75rem",
     letterSpacing: "var(--tracking-heading)",
     color: "var(--ink)",
-    margin: "0 0 0.9375rem",
+    margin: "0 0 1.9375rem",
   },
   field: { minWidth: 0, margin: 0, position: "relative", zIndex: 1 },
   input: {
