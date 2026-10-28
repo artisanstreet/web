@@ -30,7 +30,7 @@ export function HomePage() {
             hide_label
             type="email"
             autoComplete="email"
-            placeholder="you@mail.artisan.st"
+            placeholder="you@artisan.email"
           />
           <AttachedAction />
         </div>
