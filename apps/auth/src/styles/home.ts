@@ -5,18 +5,26 @@ const signin_control_height = "2.8125rem";
 
 export const home_styles = stylex.create({
   canvas: {
-    height: "100dvh",
+    height: { default: "100dvh", "@media (max-width: 52rem)": "auto" },
+    minHeight: "100dvh",
     display: "grid",
     position: "relative",
-    gridTemplateColumns: "minmax(0, 3.5fr) minmax(0, 2.5fr)",
+    gridTemplateColumns: {
+      default: "minmax(0, 3.5fr) minmax(0, 2.5fr)",
+      "@media (max-width: 52rem)": "minmax(0, 1fr)",
+    },
+    gridTemplateRows: {
+      default: "auto",
+      "@media (max-width: 52rem)": "minmax(30rem, 1fr) minmax(8rem, 25dvh)",
+    },
     backgroundColor: home_theme["--home-background"],
-    overflow: "hidden",
+    overflow: { default: "hidden", "@media (max-width: 52rem)": "visible" },
   },
   brand: {
     position: "absolute",
     top: 0,
     left: 0,
-    padding: "var(--sp-8)",
+    padding: { default: "var(--sp-8)", "@media (max-width: 52rem)": "var(--sp-6)" },
     color: home_theme["--home-foreground"],
   },
   wordmark: {
@@ -34,9 +42,20 @@ export const home_styles = stylex.create({
     display: "grid",
     placeItems: "center",
     minWidth: 0,
-    padding: "var(--sp-8)",
+    padding: {
+      default: "var(--sp-8)",
+      "@media (max-width: 52rem)": "12rem var(--sp-6) var(--sp-6)",
+    },
   },
   signin_group: {
+    "--ink-dim": home_theme["--home-foreground"],
+    "--link": home_theme["--home-foreground"],
+    "--focus": home_theme["--home-foreground"],
+    "--primary": home_theme["--home-foreground"],
+    "--primary-ink": home_theme["--home-background"],
+    "--primary-edge": home_theme["--home-foreground"],
+    "--primary-hover": "color-mix(in oklch, var(--primary) 90%, var(--primary-ink))",
+    "--primary-active": "color-mix(in oklch, var(--primary) 80%, var(--primary-ink))",
     width: "100%",
     maxWidth: "32.5rem",
     color: home_theme["--home-foreground"],
@@ -94,7 +113,8 @@ export const home_styles = stylex.create({
     height: "1.875rem",
   },
   shimmer: {
-    gridColumn: 2,
+    gridColumn: { default: 2, "@media (max-width: 52rem)": 1 },
+    gridRow: { default: 1, "@media (max-width: 52rem)": 2 },
     width: "100%",
     height: "100%",
     minWidth: 0,
