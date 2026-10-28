@@ -23,11 +23,9 @@ const styles = stylex.create({
   inner_ring: { strokeWidth: 4 },
   outer_ring: { strokeWidth: 2 },
   highlight_top: { stopColor: "color-mix(in oklch, var(--continue-face-top), oklch(1 0 0) 30%)" },
-  highlight_bottom: {
-    stopColor: "color-mix(in oklch, var(--continue-face-bottom), oklch(1 0 0) 8%)",
-  },
-  rim_top: { stopColor: "color-mix(in oklch, var(--continue-pink), oklch(0 0 0) 10%)" },
-  rim_bottom: { stopColor: "color-mix(in oklch, var(--continue-lilac), oklch(0 0 0) 14%)" },
+  highlight_bottom: { stopColor: "var(--continue-face-bottom)" },
+  rim_top: { stopColor: "color-mix(in oklch, var(--continue-face-top), oklch(0 0 0) 8%)" },
+  rim_bottom: { stopColor: "color-mix(in oklch, var(--continue-face-bottom), oklch(0 0 0) 25%)" },
 });
 
 export function AttachedAction() {
