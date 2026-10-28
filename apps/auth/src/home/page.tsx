@@ -18,7 +18,6 @@ export function HomePage() {
       </header>
       <div {...stylex.props(home_styles.content)}>
         <div {...stylex.props(home_styles.signin)}>
-          <h1 {...stylex.props(home_styles.signin_title)}>Sign In</h1>
           <TextField
             variant="bevel"
             size="lg"
