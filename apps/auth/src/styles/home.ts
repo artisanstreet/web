@@ -53,7 +53,7 @@ export const home_styles = stylex.create({
     lineHeight: "1.75rem",
     letterSpacing: "var(--tracking-heading)",
     color: "var(--ink)",
-    margin: "0 0 1rem",
+    margin: "0 0 0.9375rem",
   },
   field: { minWidth: 0, margin: 0, position: "relative", zIndex: 1 },
   input: {
@@ -77,16 +77,13 @@ export const home_styles = stylex.create({
     outline: { default: "none", ":focus-visible": "3px solid var(--focus)" },
     outlineOffset: { default: 0, ":focus-visible": 3 },
     color: "oklch(1 0 0)",
-    filter: "drop-shadow(0 1px 2px oklch(0 0 0 / 0.15))",
   },
   continue_icon: {
-    position: "relative",
+    position: "absolute",
+    top: "0.5rem",
+    insetInlineStart: "0.5rem",
     width: "1.875rem",
     height: "1.875rem",
-    backgroundImage:
-      "linear-gradient(180deg in oklch, color-mix(in oklch, oklch(1 0 0) 75%, var(--continue-face-top)), color-mix(in oklch, oklch(1 0 0) 75%, var(--continue-face-bottom)))",
-    backgroundSize: `100% ${signin_control_height}`,
-    backgroundPosition: "center",
   },
   shimmer: {
     gridColumn: 2,
