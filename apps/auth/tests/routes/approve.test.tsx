@@ -25,10 +25,11 @@ const stub_fetch = (on_call: (url: string) => void) =>
     throw new Error(`unexpected network call ${str}`);
   }) as typeof fetch;
 
-const render_at = (path: string) => {
+const render_at = async (path: string) => {
   const history = createMemoryHistory({ initialEntries: [path] });
   const router = createRouter({ routeTree, history });
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: 0 } } });
+  await router.load();
   render(
     <QueryClientProvider client={client}>
       <RouterProvider router={router} />
@@ -50,7 +51,7 @@ describe("approve rendering", () => {
   it("shows exactly the success status after consume + URL scrub, no missing prompt", async () => {
     const calls: Array<string> = [];
     vi.stubGlobal("fetch", stub_fetch((url) => void calls.push(url)));
-    const router = render_at("/approve?token=emailtok-fixture");
+    const router = await render_at("/approve?token=emailtok-fixture");
 
     expect(await screen.findByRole("button", { name: /approve this request/i })).toBeDefined();
     expect(screen.queryByText(/missing its token/i)).toBeNull();
@@ -76,7 +77,7 @@ describe("approve rendering", () => {
         throw new Error("no network call should happen");
       }) as typeof fetch,
     );
-    render_at("/approve");
+    await render_at("/approve");
     expect(await screen.findByText(/missing its token/i)).toBeDefined();
     expect(screen.queryByRole("button", { name: /approve this request/i })).toBeNull();
   });
