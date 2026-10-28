@@ -1,5 +1,6 @@
 import * as stylex from "@stylexjs/stylex";
 import { field_styles } from "./styles/controls.ts";
+import { FieldOutline } from "./field/outline.tsx";
 import * as React from "react";
 import { Field as BaseField } from "@base-ui/react/field";
 
@@ -9,7 +10,7 @@ export interface TextFieldProps {
   readonly xstyle?: stylex.StyleXStyles;
   readonly input_style?: stylex.StyleXStyles;
   readonly leading_icon?: React.ReactNode;
-  readonly variant?: "default" | "card";
+  readonly variant?: "default" | "card" | "bevel";
   readonly size?: "md" | "lg";
   readonly value?: string;
   readonly defaultValue?: string;
@@ -70,6 +71,9 @@ export const TextField: React.FC<TextFieldProps> = ({
         {required ? " *" : ""}
       </BaseField.Label>
       <div {...stylex.props(field_styles.control)}>
+        {variant === "bevel" ? (
+          <FieldOutline radius={size === "lg" ? "0.8125rem" : "var(--radius-md)"} />
+        ) : null}
         {leading_icon ? (
           <span
             {...stylex.props(
@@ -96,8 +100,9 @@ export const TextField: React.FC<TextFieldProps> = ({
           {...stylex.props(
             field_styles.input,
             size === "lg" && field_styles.input_lg,
-            variant === "card" && field_styles.card,
+            variant !== "default" && field_styles.card,
             variant === "card" && size === "lg" && field_styles.card_lg,
+            variant === "bevel" && field_styles.bevel,
             Boolean(leading_icon) && field_styles.with_icon,
             Boolean(leading_icon) && size === "lg" && field_styles.with_icon_lg,
             input_style,

@@ -149,6 +149,9 @@ export const field_styles = stylex.create({
     boxShadow:
       "0 -1px oklch(1 0 0 / 0.08), 0 5px 10px oklch(0 0 0 / 0.06), 0 0 0 1px color-mix(in oklch, var(--bg), var(--ink) 8%), 0 1px 8px -5px oklch(0 0 0)",
   },
+  bevel: {
+    boxShadow: "0 5px 10px oklch(0 0 0 / 0.06), 0 1px 8px -5px oklch(0 0 0)",
+  },
   hint: { fontSize: "0.85rem", color: "var(--muted)" },
   error: { fontSize: "0.85rem", color: "var(--err)" },
 });

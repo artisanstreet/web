@@ -20,7 +20,7 @@ export function HomePage() {
         <div {...stylex.props(home_styles.signin)}>
           <h1 {...stylex.props(home_styles.signin_title)}>Sign In</h1>
           <TextField
-            variant="card"
+            variant="bevel"
             size="lg"
             xstyle={home_styles.field}
             input_style={home_styles.input}

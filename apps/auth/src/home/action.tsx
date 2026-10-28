@@ -20,7 +20,9 @@ const styles = stylex.create({
   },
   border: { display: "block", width: "100%", height: "100%" },
   face_top: { stopColor: "var(--continue-face-top)" },
-  face_middle: { stopColor: "color-mix(in oklch, var(--continue-face-top), var(--continue-face-bottom))" },
+  face_middle: {
+    stopColor: "color-mix(in oklch, var(--continue-face-top), var(--continue-face-bottom))",
+  },
   face_bottom: { stopColor: "var(--continue-face-bottom)" },
   highlight_top: { stopColor: "color-mix(in oklch, var(--continue-face-top), oklch(1 0 0) 30%)" },
   highlight_bottom: { stopColor: "var(--continue-face-bottom)" },
@@ -39,7 +41,14 @@ export function AttachedAction() {
             <clipPath id={clip_id}>
               <path d={silhouette} />
             </clipPath>
-            <linearGradient id={`${clip_id}-face`} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="45">
+            <linearGradient
+              id={`${clip_id}-face`}
+              gradientUnits="userSpaceOnUse"
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="45"
+            >
               <stop offset="0" {...stylex.props(styles.face_top)} />
               <stop offset="0.5" {...stylex.props(styles.face_middle)} />
               <stop offset="1" {...stylex.props(styles.face_bottom)} />

@@ -17,7 +17,17 @@ export function ArrowNarrowRight({ xstyle }: Readonly<{ xstyle?: stylex.StyleXSt
   const paint_id = useId();
 
   return (
-    <svg {...stylex.props(styles.icon, xstyle)} viewBox="0 0 30 30" fill="none" stroke={`url(#${paint_id})`} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+    <svg
+      {...stylex.props(styles.icon, xstyle)}
+      viewBox="0 0 30 30"
+      fill="none"
+      stroke={`url(#${paint_id})`}
+      strokeWidth="3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
       <defs>
         <linearGradient id={paint_id} gradientUnits="userSpaceOnUse" x1="0" y1="-8" x2="0" y2="37">
           <stop offset="0" {...stylex.props(styles.top)} />
