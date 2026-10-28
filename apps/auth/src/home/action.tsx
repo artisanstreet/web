@@ -20,8 +20,8 @@ const styles = stylex.create({
   },
   clip: (id: string) => ({ clipPath: `url("#${id}")` }),
   border: { display: "block", width: "100%", height: "100%", fill: "none" },
-  inner_ring: { stroke: "oklch(0.75 0.1 345)", strokeWidth: 5 },
-  outer_ring: { stroke: "oklch(0.72 0.1 300)", strokeWidth: 2.5 },
+  inner_ring: { stroke: "oklch(0.75 0.1 345)", strokeWidth: 4 },
+  outer_ring: { stroke: "oklch(0.72 0.1 300)", strokeWidth: 2 },
 });
 
 export function AttachedAction() {

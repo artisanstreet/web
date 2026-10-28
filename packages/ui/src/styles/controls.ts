@@ -92,7 +92,7 @@ export const field_styles = stylex.create({
   with_icon: { paddingInlineStart: "calc(var(--sp-3) + 1rem + var(--sp-2))" },
   leading_icon_lg: { insetInlineStart: "0.9375rem", width: "1.25rem", height: "1.25rem" },
   with_icon_lg: { paddingInlineStart: "2.8125rem" },
-  label_lg: { fontSize: "1.09375rem", lineHeight: "1.5625rem" },
+  label_lg: { fontSize: "1.125rem", lineHeight: "1.5625rem" },
   label: {
     fontSize: "0.875rem",
     lineHeight: "1.25rem",
@@ -128,7 +128,7 @@ export const field_styles = stylex.create({
   input_lg: {
     fontSize: "1.25rem",
     lineHeight: "1.5625rem",
-    borderWidth: 1.25,
+    borderWidth: 1,
     borderRadius: "0.8125rem",
     paddingBlock: "0.625rem",
     paddingInline: "0.9375rem",
@@ -136,7 +136,7 @@ export const field_styles = stylex.create({
   },
   card_lg: {
     boxShadow:
-      "0 -0.625px oklch(1 0 0 / 0.08), 0 5px 10px oklch(0 0 0 / 0.06), 0 0 0 0.625px oklch(from var(--ink) l c h / 0.08), 0 1.25px 7.5px -5px oklch(0 0 0)",
+      "0 -1px oklch(1 0 0 / 0.08), 0 5px 10px oklch(0 0 0 / 0.06), 0 0 0 1px oklch(from var(--ink) l c h / 0.08), 0 1px 8px -5px oklch(0 0 0)",
   },
   hint: { fontSize: "0.85rem", color: "var(--muted)" },
   error: { fontSize: "0.85rem", color: "var(--err)" },

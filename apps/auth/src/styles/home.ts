@@ -22,7 +22,7 @@ export const home_styles = stylex.create({
   wordmark: {
     display: "block",
     width: "5rem",
-    aspectRatio: "310.804 / 512",
+    height: "8.25rem",
     backgroundColor: "currentColor",
     maskPosition: "center",
     maskSize: "contain",
@@ -52,7 +52,7 @@ export const home_styles = stylex.create({
     height: signin_control_height,
     minHeight: signin_control_height,
     paddingBlock: "0.3125rem",
-    fontSize: "1.09375rem",
+    fontSize: "1.125rem",
   },
   continue: {
     position: "relative",
@@ -64,8 +64,8 @@ export const home_styles = stylex.create({
     paddingInline: 0,
     borderWidth: 0,
     borderRadius: "0.8125rem",
-    outline: { default: "none", ":focus-visible": "2.5px solid var(--focus)" },
-    outlineOffset: { default: 0, ":focus-visible": 2.5 },
+    outline: { default: "none", ":focus-visible": "3px solid var(--focus)" },
+    outlineOffset: { default: 0, ":focus-visible": 3 },
     color: "oklch(1 0 0)",
   },
   continue_icon: {
