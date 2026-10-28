@@ -5,7 +5,7 @@ import { SignInForm } from "../../src/home/form.tsx";
 import { load_request_secret } from "../../src/lib/auth/storage.ts";
 
 const request_id = `logreq_01K${"A".repeat(23)}`;
-const confirmation = "We have sent an email to your inbox. Check spam aswell!";
+const confirmation = "We have sent an email to your inbox. Check spam as well!";
 
 const render_form = () => {
   const client = new QueryClient({ defaultOptions: { mutations: { retry: false } } });
@@ -23,7 +23,9 @@ describe("sign-in request lifecycle", () => {
   it("blocks duplicate sends, stores the secret, and clears confirmation for a resend", async () => {
     const responses: Array<(response: Response) => void> = [];
     const fetch_impl = vi.fn(() => new Promise<Response>((resolve) => responses.push(resolve)));
-    vi.stubGlobal("fetch", fetch_impl);
+    vi.stubGlobal("fetch", (url: string) => String(url).endsWith("/status")
+      ? Promise.resolve(new Response(JSON.stringify({ request_id, status: "pending", totp_required: false, email: "you@artisan.email", expires_at: "2099-10-28T20:00:00.000Z" }), { headers: { "content-type": "application/json" } }))
+      : fetch_impl());
     render_form();
     const form = screen.getByRole("form", { name: "Sign in" });
     fireEvent.submit(form);
@@ -37,7 +39,7 @@ describe("sign-in request lifecycle", () => {
     expect((screen.getByRole("button", { name: "Continue" }) as HTMLButtonElement).disabled).toBe(false);
     fireEvent.submit(form);
     await waitFor(() => expect(fetch_impl).toHaveBeenCalledTimes(2));
-    expect(screen.getByText(confirmation).getAttribute("aria-hidden")).toBe("true");
+    expect(screen.queryByText(confirmation)).toBeNull();
     responses[1]!(new Response(JSON.stringify({ request_id, request_secret: "replacement-secret", expires_at: "2026-10-28T20:00:00.000Z" }), { headers: { "content-type": "application/json" } }));
     await waitFor(() => expect(load_request_secret(request_id)).toBe("replacement-secret"));
     expect(screen.getByText(confirmation).getAttribute("aria-hidden")).toBe("false");

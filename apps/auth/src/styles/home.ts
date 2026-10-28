@@ -36,6 +36,17 @@ export const home_styles = stylex.create({
     minWidth: 0,
     padding: "var(--sp-8)",
   },
+  signin_group: {
+    width: "100%",
+    maxWidth: "32.5rem",
+    color: home_theme["--home-foreground"],
+  },
+  finish: {
+    display: "grid",
+    gap: "var(--sp-4)",
+    marginTop: "var(--sp-6)",
+  },
+  notice: { margin: 0, fontSize: "0.875rem", lineHeight: "1.5rem" },
   signin: {
     position: "relative",
     width: "100%",
@@ -47,13 +58,12 @@ export const home_styles = stylex.create({
   },
   field: { minWidth: 0, margin: 0, position: "relative", zIndex: 1 },
   feedback: {
-    position: "absolute",
-    top: "calc(100% + var(--sp-4))",
-    insetInline: 0,
-    color: "var(--muted)",
+    gridColumn: "1 / -1",
+    color: home_theme["--home-foreground"],
     fontSize: "0.875rem",
     lineHeight: "1.5rem",
   },
+  feedback_visible: { marginTop: "var(--sp-4)" },
   input: {
     width: "100%",
     minWidth: 0,

@@ -1,28 +1,20 @@
 import * as stylex from "@stylexjs/stylex";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { create_core_api } from "@artisanstreet/core-client";
+import { useEffect, useRef, useState } from "react";
 import { TextField } from "@artisanstreet/ui";
-import { CORE_API_BASE } from "../lib/env.ts";
-import { store_request_secret } from "../lib/auth/storage.ts";
-import { friendly_error } from "../lib/friendly-error.ts";
 import { home_styles } from "../styles/home.ts";
 import { Mail } from "../icons/mail.tsx";
 import { AttachedAction } from "./action.tsx";
 import "./motion.css";
 
-const success_message = "We have sent an email to your inbox. Check spam aswell!";
+import { useSignIn } from "./use-sign-in.ts";
+import { FinishSignIn } from "./finish.tsx";
 
-export function SignInForm() {
+export function SignInForm({ return_to }: Readonly<{ return_to?: string }>) {
   const [email, set_email] = useState("");
-  const api = useMemo(() => create_core_api(CORE_API_BASE), []);
-  const request = useMutation({
-    mutationFn: (email: string) => api.request_magic_link(email),
-    onSuccess: ({ request_id, request_secret }) => {
-      store_request_secret(request_id, request_secret);
-    },
-  });
-  const settled = request.isSuccess || request.isError;
+  const { flow, request_link, finish_sign_in } = useSignIn(return_to);
+  const settled = flow._tag === "Waiting" || flow._tag === "Failed" || flow._tag === "Expired";
+  const message = flow._tag === "Waiting" || flow._tag === "Failed" ? flow.message
+    : flow._tag === "Expired" ? "This sign-in link expired. Request a fresh one." : "";
   const feedback = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -44,44 +36,48 @@ export function SignInForm() {
   }, [settled]);
 
   return (
-    <form
-      {...stylex.props(home_styles.signin)}
-      aria-label="Sign in"
-      onSubmit={(event) => {
-        event.preventDefault();
-        if (request.isPending) return;
-        request.mutate(email.trim());
-      }}
-    >
-      <TextField
-        variant="bevel"
-        size="lg"
-        xstyle={home_styles.field}
-        input_style={home_styles.input}
-        leading_icon={<Mail size={20} />}
-        id="signin-email"
-        name="email"
-        label="Email"
-        hide_label
-        required
-        type="email"
-        autoComplete="email"
-        placeholder="you@artisan.email"
-        value={email}
-        onValueChange={set_email}
-      />
-      <AttachedAction pending={request.isPending} />
-      <div {...stylex.props(home_styles.feedback)}>
-        <div
-          ref={feedback}
-          className="t-stagger"
-          role={request.isError ? "alert" : "status"}
-        >
-          <span className="t-stagger-line" aria-hidden={!settled}>
-            {request.isError ? friendly_error(request.error) : success_message}
-          </span>
+    <div {...stylex.props(home_styles.signin_group)}>
+      <form
+        {...stylex.props(home_styles.signin)}
+        aria-label="Sign in"
+        onSubmit={(event) => {
+          event.preventDefault();
+          request_link(email);
+        }}
+      >
+        <TextField
+          variant="bevel"
+          size="lg"
+          xstyle={home_styles.field}
+          input_style={home_styles.input}
+          leading_icon={<Mail size={20} />}
+          id="signin-email"
+          name="email"
+          label="Email"
+          hide_label
+          required
+          type="email"
+          autoComplete="email"
+          placeholder="you@artisan.email"
+          disabled={flow._tag === "Finishing"}
+          value={email}
+          onValueChange={set_email}
+        />
+        <AttachedAction pending={flow._tag === "Sending"} disabled={flow._tag === "Finishing"} />
+        <div {...stylex.props(home_styles.feedback, settled && home_styles.feedback_visible)}>
+          <div
+            ref={feedback}
+            className="t-stagger"
+            role={flow._tag === "Failed" ? "alert" : "status"}
+          >
+            <span className="t-stagger-line" aria-hidden={!settled}>
+              {message}
+            </span>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+      {flow._tag === "Approved" || flow._tag === "Finishing" ?
+        <FinishSignIn key={flow.login.request_id} flow={flow} on_finish={finish_sign_in} /> : null}
+    </div>
   );
 }

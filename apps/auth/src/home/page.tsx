@@ -1,10 +1,12 @@
 import * as stylex from "@stylexjs/stylex";
 import { home_styles } from "../styles/home.ts";
 import wordmark_url from "../assets/wordmark.svg?url";
+import { Route } from "../routes/index.tsx";
 import { SignInForm } from "./form.tsx";
 import { GradientShimmer } from "../shimmer/canvas.tsx";
 
 export function HomePage() {
+  const { return_to } = Route.useSearch();
   return (
     <main {...stylex.props(home_styles.canvas)}>
       <header {...stylex.props(home_styles.brand)}>
@@ -15,7 +17,7 @@ export function HomePage() {
         />
       </header>
       <div {...stylex.props(home_styles.content)}>
-        <SignInForm />
+        <SignInForm return_to={return_to} />
       </div>
       <GradientShimmer />
     </main>

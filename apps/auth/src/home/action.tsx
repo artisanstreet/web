@@ -32,7 +32,7 @@ const styles = stylex.create({
   rim_bottom: { stopColor: "color-mix(in oklch, var(--continue-face-bottom), oklch(0 0 0) 25%)" },
 });
 
-export function AttachedAction({ pending = false }: Readonly<{ pending?: boolean }>) {
+export function AttachedAction({ pending = false, disabled = false }: Readonly<{ pending?: boolean; disabled?: boolean }>) {
   const clip_id = useId();
   const loader_props = stylex.props(styles.glyph, styles.loader);
 
@@ -41,7 +41,7 @@ export function AttachedAction({ pending = false }: Readonly<{ pending?: boolean
       variant="ghost"
       xstyle={home_styles.continue}
       type="submit"
-      disabled={pending}
+      disabled={pending || disabled}
       aria-busy={pending}
       aria-label={pending ? "Sending email" : "Continue"}
     >
