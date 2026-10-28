@@ -20,9 +20,10 @@ export function HomePage() {
         <div {...stylex.props(home_styles.signin)}>
           <TextField
             variant="card"
+            size="lg"
             xstyle={home_styles.field}
             input_style={home_styles.input}
-            leading_icon={<Mail />}
+            leading_icon={<Mail size={20} />}
             id="signin-email"
             name="email"
             label="Email"

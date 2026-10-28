@@ -1,7 +1,7 @@
 import * as stylex from "@stylexjs/stylex";
 import { home_theme } from "./theme.stylex.ts";
 
-const signin_control_height = "2.25rem";
+const signin_control_height = "2.8125rem";
 
 export const home_styles = stylex.create({
   canvas: {
@@ -39,7 +39,7 @@ export const home_styles = stylex.create({
   signin: {
     position: "relative",
     width: "100%",
-    maxWidth: "26rem",
+    maxWidth: "32.5rem",
     display: "grid",
     gridTemplateColumns: "minmax(0, 1fr) auto",
     alignItems: "end",
@@ -51,8 +51,8 @@ export const home_styles = stylex.create({
     minWidth: 0,
     height: signin_control_height,
     minHeight: signin_control_height,
-    paddingBlock: "var(--sp-1)",
-    fontSize: "0.875rem",
+    paddingBlock: "0.3125rem",
+    fontSize: "1.09375rem",
   },
   continue: {
     position: "relative",
@@ -63,11 +63,17 @@ export const home_styles = stylex.create({
     paddingBlock: 0,
     paddingInline: 0,
     borderWidth: 0,
+    borderRadius: "0.8125rem",
+    outline: { default: "none", ":focus-visible": "2.5px solid var(--focus)" },
+    outlineOffset: { default: 0, ":focus-visible": 2.5 },
     color: "oklch(1 0 0)",
   },
   continue_icon: {
     position: "relative",
-    backgroundImage: "linear-gradient(180deg in oklch, color-mix(in oklch, oklch(1 0 0) 75%, var(--continue-pink)), color-mix(in oklch, oklch(1 0 0) 75%, var(--continue-lilac)))",
+    width: "1.875rem",
+    height: "1.875rem",
+    backgroundImage:
+      "linear-gradient(180deg in oklch, color-mix(in oklch, oklch(1 0 0) 75%, var(--continue-pink)), color-mix(in oklch, oklch(1 0 0) 75%, var(--continue-lilac)))",
     backgroundSize: `100% ${signin_control_height}`,
     backgroundPosition: "center",
   },

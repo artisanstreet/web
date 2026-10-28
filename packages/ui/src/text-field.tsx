@@ -9,6 +9,7 @@ export interface TextFieldProps {
   readonly input_style?: stylex.StyleXStyles;
   readonly leading_icon?: React.ReactNode;
   readonly variant?: "default" | "card";
+  readonly size?: "md" | "lg";
   readonly value?: string;
   readonly defaultValue?: string;
   readonly onValueChange?: (next: string) => void;
@@ -30,6 +31,7 @@ export const TextField: React.FC<TextFieldProps> = ({
   input_style,
   leading_icon,
   variant = "default",
+  size = "md",
   value,
   defaultValue,
   onValueChange,
@@ -50,14 +52,26 @@ export const TextField: React.FC<TextFieldProps> = ({
     onValueChange?.(event.target.value);
   };
   return (
-    <BaseField.Root {...stylex.props(field_styles.root, xstyle)} invalid={Boolean(error)}>
-      <BaseField.Label htmlFor={control_id} {...stylex.props(field_styles.label)}>
+    <BaseField.Root
+      {...stylex.props(field_styles.root, size === "lg" && field_styles.root_lg, xstyle)}
+      invalid={Boolean(error)}
+    >
+      <BaseField.Label
+        htmlFor={control_id}
+        {...stylex.props(field_styles.label, size === "lg" && field_styles.label_lg)}
+      >
         {label}
         {required ? " *" : ""}
       </BaseField.Label>
       <div {...stylex.props(field_styles.control)}>
         {leading_icon ? (
-          <span {...stylex.props(field_styles.leading_icon)} aria-hidden="true">
+          <span
+            {...stylex.props(
+              field_styles.leading_icon,
+              size === "lg" && field_styles.leading_icon_lg,
+            )}
+            aria-hidden="true"
+          >
             {leading_icon}
           </span>
         ) : null}
@@ -75,8 +89,11 @@ export const TextField: React.FC<TextFieldProps> = ({
           placeholder={placeholder}
           {...stylex.props(
             field_styles.input,
+            size === "lg" && field_styles.input_lg,
             variant === "card" && field_styles.card,
+            variant === "card" && size === "lg" && field_styles.card_lg,
             Boolean(leading_icon) && field_styles.with_icon,
+            Boolean(leading_icon) && size === "lg" && field_styles.with_icon_lg,
             input_style,
           )}
         />

@@ -75,6 +75,7 @@ export const button_styles = stylex.create({
 
 export const field_styles = stylex.create({
   root: { display: "grid", gap: "var(--sp-2)", margin: "0 0 var(--sp-4)" },
+  root_lg: { gap: "0.625rem", margin: "0 0 1.25rem" },
   control: { position: "relative", display: "grid", minWidth: 0 },
   leading_icon: {
     position: "absolute",
@@ -89,6 +90,9 @@ export const field_styles = stylex.create({
     pointerEvents: "none",
   },
   with_icon: { paddingInlineStart: "calc(var(--sp-3) + 1rem + var(--sp-2))" },
+  leading_icon_lg: { insetInlineStart: "0.9375rem", width: "1.25rem", height: "1.25rem" },
+  with_icon_lg: { paddingInlineStart: "2.8125rem" },
+  label_lg: { fontSize: "1.09375rem", lineHeight: "1.5625rem" },
   label: {
     fontSize: "0.875rem",
     lineHeight: "1.25rem",
@@ -120,6 +124,19 @@ export const field_styles = stylex.create({
     caretColor: "var(--muted)",
     boxShadow: "var(--shadow-card)",
     outline: { ":focus-visible": "none" },
+  },
+  input_lg: {
+    fontSize: "1.25rem",
+    lineHeight: "1.5625rem",
+    borderWidth: 1.25,
+    borderRadius: "0.8125rem",
+    paddingBlock: "0.625rem",
+    paddingInline: "0.9375rem",
+    minHeight: "3.4375rem",
+  },
+  card_lg: {
+    boxShadow:
+      "0 -0.625px oklch(1 0 0 / 0.08), 0 5px 10px oklch(0 0 0 / 0.06), 0 0 0 0.625px oklch(from var(--ink) l c h / 0.08), 0 1.25px 7.5px -5px oklch(0 0 0)",
   },
   hint: { fontSize: "0.85rem", color: "var(--muted)" },
   error: { fontSize: "0.85rem", color: "var(--err)" },

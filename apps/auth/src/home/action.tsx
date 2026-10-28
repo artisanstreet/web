@@ -4,8 +4,8 @@ import { Button } from "@artisanstreet/ui";
 import { ArrowNarrowRight } from "../icons/arrow-narrow-right.tsx";
 import { home_styles } from "../styles/home.ts";
 
-const outer_edge = "M0 0H36A10.4 10.4 0 0 1 46.4 10.4V25.6A10.4 10.4 0 0 1 36 36H0";
-const silhouette = `${outer_edge}A10.4 10.4 0 0 0 10.4 25.6V10.4A10.4 10.4 0 0 0 0 0Z`;
+const outer_edge = "M0 0H45A13 13 0 0 1 58 13V32A13 13 0 0 1 45 45H0";
+const silhouette = `${outer_edge}A13 13 0 0 0 13 32V13A13 13 0 0 0 0 0Z`;
 
 const styles = stylex.create({
   surface: {
@@ -13,15 +13,15 @@ const styles = stylex.create({
     top: 0,
     bottom: 0,
     right: 0,
-    width: "calc(2.25rem + var(--radius-md))",
+    width: "3.625rem",
     pointerEvents: "none",
     backgroundImage:
       "linear-gradient(180deg in oklch, var(--continue-pink), var(--continue-lilac))",
   },
   clip: (id: string) => ({ clipPath: `url("#${id}")` }),
   border: { display: "block", width: "100%", height: "100%", fill: "none" },
-  inner_ring: { stroke: "oklch(0.75 0.1 345)", strokeWidth: 4 },
-  outer_ring: { stroke: "oklch(0.72 0.1 300)", strokeWidth: 2 },
+  inner_ring: { stroke: "oklch(0.75 0.1 345)", strokeWidth: 5 },
+  outer_ring: { stroke: "oklch(0.72 0.1 300)", strokeWidth: 2.5 },
 });
 
 export function AttachedAction() {
@@ -30,10 +30,10 @@ export function AttachedAction() {
   return (
     <Button variant="ghost" xstyle={home_styles.continue} aria-label="Continue">
       <span {...stylex.props(styles.surface, styles.clip(clip_id))} aria-hidden="true">
-        <svg viewBox="0 0 46.4 36" {...stylex.props(styles.border)}>
+        <svg viewBox="0 0 58 45" {...stylex.props(styles.border)}>
           <defs>
             <clipPath id={clip_id} clipPathUnits="objectBoundingBox">
-              <path d={silhouette} transform="scale(0.0215517241 0.0277777778)" />
+              <path d={silhouette} transform="scale(0.0172413793 0.0222222222)" />
             </clipPath>
           </defs>
           <path d={outer_edge} {...stylex.props(styles.inner_ring)} />
