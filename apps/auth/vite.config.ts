@@ -18,6 +18,7 @@ export default defineConfig({
     },
   },
   build: {
+    cssCodeSplit: false,
     outDir: "dist",
     sourcemap: true,
     target: "es2022",
