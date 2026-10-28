@@ -45,6 +45,16 @@ export const home_styles = stylex.create({
     alignItems: "end",
     gap: 0,
   },
+  signin_title: {
+    gridColumn: "1 / -1",
+    fontFamily: "var(--font-display)",
+    fontSize: "1.375rem",
+    fontWeight: 600,
+    lineHeight: "1.75rem",
+    letterSpacing: "var(--tracking-heading)",
+    color: "var(--ink)",
+    margin: "0 0 1rem",
+  },
   field: { minWidth: 0, margin: 0, position: "relative", zIndex: 1 },
   input: {
     width: "100%",

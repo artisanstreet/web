@@ -93,6 +93,17 @@ export const field_styles = stylex.create({
   leading_icon_lg: { insetInlineStart: "0.9375rem", width: "1.25rem", height: "1.25rem" },
   with_icon_lg: { paddingInlineStart: "2.8125rem" },
   label_lg: { fontSize: "1.125rem", lineHeight: "1.5625rem" },
+  hidden_label: {
+    position: "absolute",
+    width: 1,
+    height: 1,
+    padding: 0,
+    margin: -1,
+    overflow: "hidden",
+    clipPath: "inset(50%)",
+    whiteSpace: "nowrap",
+    borderWidth: 0,
+  },
   label: {
     fontSize: "0.875rem",
     lineHeight: "1.25rem",

@@ -5,6 +5,7 @@ import { Field as BaseField } from "@base-ui/react/field";
 
 export interface TextFieldProps {
   readonly label: string;
+  readonly hide_label?: boolean;
   readonly xstyle?: stylex.StyleXStyles;
   readonly input_style?: stylex.StyleXStyles;
   readonly leading_icon?: React.ReactNode;
@@ -27,6 +28,7 @@ export interface TextFieldProps {
 
 export const TextField: React.FC<TextFieldProps> = ({
   label,
+  hide_label = false,
   xstyle,
   input_style,
   leading_icon,
@@ -58,7 +60,11 @@ export const TextField: React.FC<TextFieldProps> = ({
     >
       <BaseField.Label
         htmlFor={control_id}
-        {...stylex.props(field_styles.label, size === "lg" && field_styles.label_lg)}
+        {...stylex.props(
+          field_styles.label,
+          size === "lg" && field_styles.label_lg,
+          hide_label && field_styles.hidden_label,
+        )}
       >
         {label}
         {required ? " *" : ""}
