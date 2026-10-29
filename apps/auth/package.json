@@ -5,6 +5,10 @@
   "version": "0.1.0",
   "type": "module",
   "description": "auth.artisan.st — Artisan account sign-in (magic link + TOTP) on TanStack Start.",
+  "portless": {
+    "name": "auth.artisan",
+    "appPort": 5201
+  },
   "scripts": {
     "dev": "vp dev --port 5201",
     "build": "vp build",
