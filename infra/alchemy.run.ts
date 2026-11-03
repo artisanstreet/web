@@ -5,7 +5,6 @@ import { STACK_NAME, assert_all_origins_distinct, assert_browser_origins_for_sta
 import { build_auth_props, build_dashboard_props } from "./src/sites.ts";
 import { config as deploy_config } from "./src/env.generated.ts";
 
-// Web composition root: two Website.Vite Start Workers (auth + dashboard).
 const stack_program = Effect.gen(function* () {
   const { stage } = yield* Alchemy.Stack;
 
@@ -22,14 +21,14 @@ const stack_program = Effect.gen(function* () {
   const auth_props = build_auth_props(stage, { core_origin, relay_origin, auth_origin, dashboard_origin });
   const dashboard_props = build_dashboard_props(stage, { core_origin, relay_origin, auth_origin, dashboard_origin });
 
-  const auth_site = yield* Cloudflare.Website.Vite("AuthSite", {
+  const auth_site = yield* Cloudflare.Website.SvelteKit("AuthSite", {
     rootDir: auth_props.rootDir,
     domain: auth_props.domain,
     workersDev: auth_props.workersDev,
     env: auth_props.env,
     memo: auth_props.memo,
   });
-  const dashboard_site = yield* Cloudflare.Website.Vite("DashboardSite", {
+  const dashboard_site = yield* Cloudflare.Website.SvelteKit("DashboardSite", {
     rootDir: dashboard_props.rootDir,
     domain: dashboard_props.domain,
     workersDev: dashboard_props.workersDev,
