@@ -14,7 +14,6 @@
     Landing,
     leave_for,
     OauthProblem,
-    provider_names,
     provider_return_of,
     ProviderReturn,
     recall,
@@ -145,10 +144,11 @@
     </Well>
   {:else if Callback.$is("Signup")(view)}
     {@const avatar = view.profile.avatar_url}
-    <Heading
-      title="Create your account"
-      text="Signing up with {provider_names[view.pending.provider]} as {view.profile.email}. What should we call you?"
-    >
+    {@const email = view.profile.email}
+    <Heading title="Create your account">
+      {#snippet text()}
+        We're going to create a new account using the email address <span class="email">{email}</span>. What should we call you?
+      {/snippet}
       {#snippet leading()}
         {#if avatar !== null}
           <img class="avatar" src={avatar} alt="" width="44" height="44" />
@@ -191,5 +191,9 @@
     flex: none;
     border-radius: var(--field-radius);
     box-shadow: var(--shadow-inset);
+  }
+
+  .email {
+    color: var(--ink);
   }
 </style>
