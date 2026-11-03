@@ -9,6 +9,7 @@ export const csp_directives: CspDirectives = {
   "img-src": ["self", "data:", "blob:", "https://avatars.githubusercontent.com", "https://lh3.googleusercontent.com"],
   "font-src": ["self"],
   "style-src": ["self"],
+  "style-src-attr": ["unsafe-inline"],
   "object-src": ["none"],
   "base-uri": ["none"],
   "frame-ancestors": ["none"],
