@@ -47,6 +47,25 @@
   --disabled-ink: var(--polar-400);
   --disabled-edge: var(--polar-600);
 
+  --card-inner: color-mix(in oklch, var(--bg-raised), var(--ink) 6%);
+  --bevel-shade: 25%;
+  --glass-near: var(--polar-600);
+  --glass-far: var(--polar-700);
+  --glass-rim-shade: oklch(0 0 0 / 0.22);
+  --rule-shade: oklch(0 0 0 / 0.22);
+  --rule-light: oklch(1 0 0 / 0.08);
+  --hover-fill: linear-gradient(oklch(from var(--ink) l c h / 0.09), oklch(from var(--ink) l c h / 0.03));
+  --hover-edge: oklch(from var(--ink) l c h / 0.07);
+  --shadow-rest:
+    0 5px 10px oklch(0 0 0 / 0.06),
+    0 1px 8px -5px oklch(0 0 0);
+  --shadow-press: 0 1.5px 1.5px oklch(0 0 0 / 0.3);
+  --shadow-overlay:
+    0 1px 2px oklch(0 0 0 / 0.25),
+    0 4px 8px -2px oklch(0 0 0 / 0.3),
+    0 12px 24px -6px oklch(0 0 0 / 0.35),
+    0 24px 48px -12px oklch(0 0 0 / 0.35);
+
   --sp-1: 0.25rem;
   --sp-2: 0.5rem;
   --sp-3: 0.75rem;
@@ -71,4 +90,58 @@
   --maxw-shell: 64rem;
   --content-max: 62rem;
   --sidebar-w: 15.5rem;
+}
+
+:root[data-theme="light"] {
+  --frame: var(--gray-100);
+  --bg: var(--white);
+  --bg-raised: var(--gray-100);
+  --panel: var(--gray-50);
+  --panel-edge: var(--gray-200);
+  --panel-edge-soft: var(--gray-300);
+  --surface: var(--gray-50);
+  --surface-2: var(--gray-100);
+  --line: var(--gray-200);
+  --line-soft: var(--gray-300);
+  --control-edge: var(--gray-400);
+  --hover: var(--gray-200);
+  --pressed: var(--gray-200);
+
+  --ink: var(--black);
+  --ink-dim: var(--gray-500);
+  --ink-faint: var(--gray-400);
+
+  --primary: var(--black);
+  --primary-hover: var(--polar-600);
+  --primary-active: var(--polar-700);
+  --primary-ink: var(--white);
+  --link: var(--blue-600);
+  --selection: var(--blue-100);
+  --focus: var(--blue-300);
+
+  --err-surface: var(--red-50);
+  --danger-active: var(--red-700);
+  --danger-edge: var(--red-600);
+  --disabled: var(--gray-100);
+  --disabled-ink: var(--gray-400);
+  --disabled-edge: var(--gray-200);
+
+  --card-inner: var(--gray-50);
+  --bevel-shade: 5%;
+  --hover-fill: linear-gradient(oklch(from var(--ink) l c h / 0.02), oklch(from var(--ink) l c h / 0.06));
+  --hover-edge: oklch(from var(--ink) l c h / 0.05);
+  --shadow-rest:
+    0 4px 10px oklch(from var(--gray-900) l c h / 0.03),
+    0 1px 6px -4px oklch(from var(--gray-900) l c h / 0.18);
+  --shadow-press: 0 1px 1.5px oklch(from var(--gray-900) l c h / 0.12);
+  --glass-near: var(--gray-300);
+  --glass-far: var(--gray-200);
+  --glass-rim-shade: oklch(0 0 0 / 0.05);
+  --rule-shade: oklch(from var(--gray-900) l c h / 0.08);
+  --rule-light: oklch(1 0 0 / 0.9);
+  --shadow-overlay:
+    0 1px 2px oklch(from var(--gray-900) l c h / 0.03),
+    0 4px 8px -2px oklch(from var(--gray-900) l c h / 0.04),
+    0 12px 24px -6px oklch(from var(--gray-900) l c h / 0.04),
+    0 24px 48px -12px oklch(from var(--gray-900) l c h / 0.05);
 }

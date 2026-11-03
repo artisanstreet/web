@@ -1,322 +1,286 @@
-// Core v1 HTTP client for auth/dashboard browser sites.
-//
-// Contract source: pinned own Core contract artifact
-// `src/contract-v1.ts` (copied from core/src/contracts/v1.ts at
-// 40e040f; see PROVENANCE.json). Effect Schema is authoritative.
-// Rules honored here:
-// - Requests are encoded STRICT: unknown fields are rejected client-side
-//   before anything is sent (matches the server's strict reads).
-// - Responses are read forward-compatibly: unknown fields are ignored, so
-//   additive v1 fields never break this UI.
-// - Session auth is the host-only HttpOnly `ast_session` cookie on
-//   api.artisan.st (never readable from JS); fetch uses
-//   `credentials: "include"` for exact-origin credentialed CORS from
-//   https://auth.artisan.st and https://dashboard.artisan.st.
-//   No parent-domain cookies, no JS session tokens, no BFF.
-// - Ownership is server-derived: this client never sends accountId to
-//   claim scope, and never puts tokens in URLs or logs.
-//
-// Effect lies underneath (`./api/effect.ts`): `get`/`post` run an
-// Effect (`api_get`/`api_post` with typed `ApiFailure`/`TransportFailure`/
-// `DecodeFailure` + `Schedule` retry on idempotent GETs) and collapse to a
-// Promise ONLY here — the single `Effect.runPromise` boundary for pages.
-// Product error formatting stays concise and field-level.
-
-import { Either, Schema } from "effect";
-import { ArrayFormatter, isParseError } from "effect/ParseResult";
+import { Context, Effect, flow, Layer, Option, Schedule, Schema } from "effect";
+import { FetchHttpClient, HttpClient, HttpClientRequest, type HttpClientResponse } from "effect/http";
 import * as C from "./contract-v1.ts";
-import { ApiError, ApiFailure } from "./api/error.ts";
-import { run_promise } from "./run-promise.ts";
-import { api_get, api_post, decode_lenient as decode_lenient_eff, encode_strict as encode_strict_eff, issue_grant_effect, login_status_effect, strict_options, type FetchLike, type HttpSeam } from "./api/effect.ts";
+import { ApiFailure, DecodeFailure, InvalidEmail, InvalidRequest, is_transient, TransportFailure, type CoreFailure } from "./errors.ts";
+import { factor_fields, type FinalizePayload, type SecondFactor } from "./finalize.ts";
 
-export { ApiError };
-export type { FetchLike, HttpSeam } from "./api/effect.ts";
-export type { ApiErrorShape } from "./api/error.ts";
-
-/** Encode a request body strictly; throws on unknown fields. */
-export function encode_strict<A, I>(schema: Schema.Schema<A, I>, value: A): I {
-  return encode_strict_eff(schema, value);
+export interface OauthFlowRef {
+  readonly flow_id: string;
+  readonly flow_secret: string;
 }
 
-/** Decode a response forward-compatibly (unknown fields ignored). */
-export function decode_lenient<A, I>(schema: Schema.Schema<A, I>, input: unknown): A {
-  return decode_lenient_eff(schema, input);
-}
+const strict = { onExcessProperty: "error" } as const;
 
-/** Decode a request-shaped value strictly (used in tests + validation). */
-export function decode_strict<A, I>(schema: Schema.Schema<A, I>, input: unknown): A {
-  return Schema.decodeUnknownSync(schema, strict_options)(input);
-}
-
-/** Field labels for the forms that submit contract requests. */
-const FIELD_LABELS: Record<string, string> = {
-  email: "Email",
-  code: "Code",
-  totpCode: "Authenticator code",
-  recoveryCode: "Recovery code",
-  requestSecret: "Request secret",
-  requestId: "Sign-in request",
-  token: "Link token",
-  label: "Label",
-  apiKey: "API key",
-  provider: "Provider",
-  connectionId: "Connection",
-  machineId: "Forge",
-  deviceName: "Device name",
-  displayName: "Name",
-};
-
-/**
- * Turn a strict-encode ParseError into one concise sentence naming the
- * first bad field (e.g. "Enter a valid email address."). Falls back to a
- * generic prompt when the tree carries nothing mappable.
- */
-export function humanize_validation_error(error: unknown): string {
-  if (!isParseError(error)) return "Some fields need attention before sending.";
-  const issues = Either.getOrNull(
-    Either.try({
-      try: () => ArrayFormatter.formatErrorSync(error) as Array<{ path: ReadonlyArray<PropertyKey>; message: string }>,
-      catch: () => null,
+const api_failure = (status: number, json: unknown): Effect.Effect<never, CoreFailure> =>
+  Schema.decodeUnknownEffect(C.ErrorEnvelope)(json).pipe(
+    Effect.match({
+      onFailure: (): CoreFailure => new DecodeFailure({ reason: `status ${status}` }),
+      onSuccess: ({ error }): CoreFailure =>
+        new ApiFailure({
+          status,
+          code: error.code,
+          message: error.message,
+          request_id: error.request_id ?? "",
+        }),
     }),
+    Effect.flatMap((failure) => Effect.fail(failure)),
   );
-  const first = issues?.[0];
-  if (!first) return "Some fields need attention before sending.";
-  const field = String(first.path[first.path.length - 1] ?? "");
-  const label = FIELD_LABELS[field] ?? (field ? field : null);
-  if (/email/i.test(field)) return "Enter a valid email address.";
-  if (/message/i.test(first.message) && /missing/i.test(first.message)) {
-    return label ? `Enter ${article(label)} ${label.toLowerCase()}.` : "A required field is missing.";
-  }
-  if (label) return `${label}: ${shorten(first.message)}`;
-  return shorten(first.message);
-}
 
-function article(word: string): string {
-  return /^[aeiou]/i.test(word) ? "an" : "a";
-}
-
-function shorten(message: string): string {
-  const one_line = message.replace(/\s+/g, " ").trim();
-  if (one_line.length <= 140) return one_line.endsWith(".") ? one_line : `${one_line}.`;
-  return "That value is not valid here.";
-}
-
-export interface ApiOptions {
-  fetch_impl?: typeof fetch;
-}
-
-/**
- * Minimal Core client. `base` is "" for same-origin (production + dev
- * proxy). A fully-qualified override is allowed only for local fixture
- * servers used in tests; cookie sessions still require same-origin.
- *
- * Promise methods ONLY — pages call these. Internals run Effect.
- */
-export class CoreApi implements HttpSeam {
-  readonly fetch_impl: FetchLike;
-  readonly base: string;
-
-  constructor(base = "", opts: ApiOptions = {}) {
-    this.base = base;
-    this.fetch_impl = opts.fetch_impl ?? fetch.bind(globalThis);
-  }
-
-  async get<A, I>(path: string, response_schema: Schema.Schema<A, I>): Promise<A> {
-    return run_promise(api_get(this.fetch_impl, this.base, path, response_schema));
-  }
-
-  async post<A, I, RA, RI>(
-    path: string,
-    request_schema: Schema.Schema<RA, RI> | null,
-    request_body: RA | null,
-    response_schema: Schema.Schema<A, I>,
-  ): Promise<A> {
-    return run_promise(
-      api_post(
-        this.fetch_impl,
-        this.base,
-        path,
-        request_schema,
-        request_body,
-        response_schema,
-        (encode_err) =>
-          new ApiFailure({
-            status: 400,
-            code: "bad_request",
-            message: humanize_validation_error(encode_err),
-            request_id: "",
-          }),
+const decode_response =
+  <A>(schema: Schema.Codec<A, unknown>) =>
+  (response: HttpClientResponse.HttpClientResponse): Effect.Effect<A, CoreFailure> =>
+    response.json.pipe(
+      Effect.mapError(() => new DecodeFailure({ reason: `unreadable body ${response.status}` })),
+      Effect.flatMap((json) =>
+        response.status >= 200 && response.status < 300
+          ? Schema.decodeUnknownEffect(schema)(json).pipe(
+              Effect.mapError(() => new DecodeFailure({ reason: "unreadable shape" })),
+            )
+          : api_failure(response.status, json),
       ),
     );
-  }
 
-  // -- auth ---------------------------------------------------------------
+const malformed = () => new InvalidRequest({ reason: "malformed request" });
 
-  request_magic_link(email: string, display_name?: string, device_name?: string) {
-    return this.post("/v1/auth/magic/request", C.MagicRequest, { email, displayName: display_name, deviceName: device_name }, C.MagicRequestResp);
-  }
+const transient_retry = <A, E, R>(call: Effect.Effect<A, E, R>) =>
+  Effect.retry(call, { while: is_transient, times: 2, schedule: Schedule.exponential("200 millis") });
 
-  login_status(request_id: string, request_secret: string) {
-    return run_promise(login_status_effect(this.fetch_impl, this.base, request_id, request_secret));
-  }
+const account_header = "x-ast-account";
 
-  /** Approve an emailed link. Always POST: link GETs never consume. */
-  consume_magic_link(token: string, request_secret?: string) {
-    return this.post("/v1/auth/magic/consume", C.MagicConsumeReq, { token, requestSecret: request_secret }, C.MagicConsumeResp);
-  }
+const as_account =
+  (account: Option.Option<string>) =>
+  (request: HttpClientRequest.HttpClientRequest): HttpClientRequest.HttpClientRequest =>
+    Option.match(account, {
+      onNone: () => request,
+      onSome: (id) => HttpClientRequest.setHeader(request, account_header, id),
+    });
 
-  /**
-   * Complete sign-in. Requires the requestSecret held by the originating
-   * browser: the emailed token alone can never mint a session. Callers must
-   * refuse to call without a secret (enforced here, not just in the UI).
-   */
-  finalize_magic_link(request_id: string, request_secret: string | null, second_factor?: { totp_code?: string; recovery_code?: string }) {
-    if (!request_secret) throw new Error("finalize requires the originating browser's request secret");
-    const { totp_code, recovery_code } = second_factor ?? {};
-    return this.post(
-      "/v1/auth/magic/finalize",
-      C.MagicFinalizeReq,
-      {
-        requestId: request_id,
-        requestSecret: request_secret,
-        ...(totp_code !== undefined ? { totpCode: totp_code } : {}),
-        ...(recovery_code !== undefined ? { recoveryCode: recovery_code } : {}),
-      },
-      C.MagicFinalizeResp,
+const path_of = (prefix: string, id: string, suffix: string) => `${prefix}/${encodeURIComponent(id)}${suffix}`;
+
+const make = (base: string, active_account: Effect.Effect<Option.Option<string>>) =>
+  Effect.gen(function* () {
+    const client = (yield* HttpClient.HttpClient).pipe(
+      HttpClient.mapRequest(flow(HttpClientRequest.prependUrl(base), HttpClientRequest.acceptJson)),
+      HttpClient.mapRequestEffect((request) =>
+        Effect.map(active_account, (account) =>
+          request.headers[account_header] === undefined ? as_account(account)(request) : request,
+        ),
+      ),
     );
-  }
 
-  enroll_totp() {
-    return this.post("/v1/auth/totp/enroll", null, null, C.TotpEnrollResp);
-  }
+    const execute = <A>(request: HttpClientRequest.HttpClientRequest, schema: Schema.Codec<A, unknown>) =>
+      client.execute(request).pipe(
+        Effect.mapError(() => new TransportFailure()),
+        Effect.flatMap(decode_response(schema)),
+      );
 
-  verify_totp(code: string) {
-    return this.post("/v1/auth/totp/verify", C.TotpVerifyReq, { code }, C.TotpVerifyResp);
-  }
+    const get = <A>(request: HttpClientRequest.HttpClientRequest, schema: Schema.Codec<A, unknown>) =>
+      execute(request, schema).pipe(transient_retry);
 
-  disable_totp(code: string) {
-    return this.post("/v1/auth/totp/disable", C.TotpDisableReq, { code }, C.TotpDisableResp);
-  }
+    const post = <A, B, E>(
+      path: string,
+      request_schema: Schema.Codec<B, unknown>,
+      body: B,
+      response_schema: Schema.Codec<A, unknown>,
+      invalid: () => E,
+      decorate: (request: HttpClientRequest.HttpClientRequest) => HttpClientRequest.HttpClientRequest = (request) =>
+        request,
+    ) =>
+      Schema.encodeUnknownEffect(request_schema, strict)(body).pipe(
+        Effect.mapError(invalid),
+        Effect.flatMap((encoded) =>
+          execute(decorate(HttpClientRequest.post(path).pipe(HttpClientRequest.bodyJsonUnsafe(encoded))), response_schema),
+        ),
+      );
 
-  me() {
-    return this.get("/v1/me", C.MeResp);
-  }
+    const post_empty = <A>(path: string, response_schema: Schema.Codec<A, unknown>) =>
+      execute(HttpClientRequest.post(path).pipe(HttpClientRequest.bodyJsonUnsafe({})), response_schema);
 
-  sessions() {
-    return this.get("/v1/sessions", C.SessionListResp);
-  }
+    return {
+      profile: get(HttpClientRequest.get("/v1/account/profile"), C.ProfileResp),
+      update_profile_name: (display_name: string) => post("/v1/account/profile/name", C.ProfileNameReq, { displayName: display_name }, C.ProfileResp, malformed),
+      update_profile_username: (username: string) => post("/v1/account/profile/username", C.ProfileUsernameReq, { username }, C.ProfileResp, malformed),
+      update_profile_phone: (phone: string | null) => post("/v1/account/profile/phone", C.ProfilePhoneReq, { phone }, C.ProfileResp, malformed),
+      update_profile_avatar: (avatar: string) => post("/v1/account/profile/avatar", C.ProfileAvatarReq, { avatar }, C.ProfileResp, malformed),
+      request_magic_link: (email: string) =>
+        post("/v1/auth/magic/request", C.MagicRequest, { email }, C.MagicRequestResp, () => new InvalidEmail()),
+      login_status: (request_id: string, request_secret: string) =>
+        post(
+          "/v1/auth/magic/status",
+          C.MagicStatusReq,
+          { requestId: request_id, requestSecret: request_secret },
+          C.MagicStatusResp,
+          malformed,
+        ),
+      consume_magic_link: (token: string) =>
+        post("/v1/auth/magic/consume", C.MagicConsumeReq, { token }, C.MagicConsumeResp, malformed),
+      finalize_magic_link: (payload: FinalizePayload) =>
+        post(
+          "/v1/auth/magic/finalize",
+          C.MagicFinalizeReq,
+          {
+            requestId: payload.request_id,
+            requestSecret: payload.request_secret,
+            ...factor_fields(payload.factor),
+          },
+          C.MagicFinalizeResp,
+          malformed,
+        ),
+      start_oauth: (provider: C.OauthProvider) =>
+        post("/v1/auth/oauth/start", C.OauthStartReq, { provider }, C.OauthStartResp, malformed),
+      oauth_callback: (flow: OauthFlowRef, state: string, code: string) =>
+        post(
+          "/v1/auth/oauth/callback",
+          C.OauthCallbackReq,
+          { flowId: flow.flow_id, flowSecret: flow.flow_secret, state, code },
+          C.OauthCallbackResp,
+          malformed,
+        ),
+      oauth_second_factor: (flow: OauthFlowRef, factor: SecondFactor) =>
+        post(
+          "/v1/auth/oauth/second-factor",
+          C.OauthSecondFactorReq,
+          { flowId: flow.flow_id, flowSecret: flow.flow_secret, ...factor_fields(factor) },
+          C.MagicFinalizeResp,
+          malformed,
+        ),
+      oauth_signup: (flow: OauthFlowRef, display_name: string) =>
+        post(
+          "/v1/auth/oauth/signup",
+          C.OauthSignupReq,
+          { flowId: flow.flow_id, flowSecret: flow.flow_secret, displayName: display_name },
+          C.MagicFinalizeResp,
+          malformed,
+        ),
+      sign_in_methods: get(HttpClientRequest.get("/v1/account/sign-in-methods"), C.SignInMethodsResp),
+      link_sign_in: (provider: C.OauthProvider, account: Option.Option<string>) =>
+        post(
+          "/v1/account/sign-in-methods/link",
+          C.OauthStartReq,
+          { provider },
+          C.OauthStartResp,
+          malformed,
+          as_account(account),
+        ),
+      signed_in_accounts: get(HttpClientRequest.get("/v1/sessions/accounts"), C.SignedInAccountsResp),
+      enable_email_sign_in: post_empty("/v1/account/sign-in-methods/email", C.SignInMethodsResp),
+      remove_sign_in: (kind: C.SignInKind, totp_code: Option.Option<string>) =>
+        post(
+          path_of("/v1/account/sign-in-methods", kind, "/remove"),
+          C.SignInMethodRemoveReq,
+          Option.match(totp_code, { onNone: () => ({}), onSome: (code) => ({ totpCode: code }) }),
+          C.SignInMethodsResp,
+          malformed,
+        ),
+      enroll_totp: post_empty("/v1/auth/totp/enroll", C.TotpEnrollResp),
+      verify_totp: (code: string) =>
+        post("/v1/auth/totp/verify", C.TotpVerifyReq, { code }, C.TotpVerifyResp, malformed),
+      disable_totp: (code: string) =>
+        post("/v1/auth/totp/disable", C.TotpDisableReq, { code }, C.TotpDisableResp, malformed),
+      me: get(HttpClientRequest.get("/v1/me"), C.MeResp),
+      sessions: get(HttpClientRequest.get("/v1/sessions"), C.SessionListResp),
+      revoke_current_session: post_empty("/v1/sessions/current/revoke", C.Revoked),
+      revoke_session: (session_id: string) => post_empty(path_of("/v1/sessions", session_id, "/revoke"), C.Revoked),
+      revoke_all_sessions: post_empty("/v1/sessions/revoke-all", C.Revoked),
+      disable_account: post_empty("/v1/account/disable", Schema.Struct({ disabled: Schema.Boolean })),
+      claim_enrollment: (code: string) =>
+        post("/v1/machines/enrollments/claim", C.EnrollmentClaimReq, { code }, C.EnrollmentClaimResp, malformed),
+      machines: get(HttpClientRequest.get("/v1/machines"), C.MachineListResp),
+      revoke_machine: (machine_id: string) => post_empty(path_of("/v1/machines", machine_id, "/revoke"), C.Revoked),
+      issue_grant: (request: C.GrantIssueReq) =>
+        post("/v1/grants/issue", C.GrantIssueReq, request, C.GrantIssueResp, malformed),
+      provider_connections: get(HttpClientRequest.get("/v1/vault/connections"), C.ProviderListResp),
+      create_provider_connection: (provider: C.ProviderKind, label: string, api_key: string) =>
+        post(
+          "/v1/vault/connections",
+          C.ProviderCreateReq,
+          { provider, label, apiKey: api_key },
+          C.ProviderInfo,
+          malformed,
+        ),
+      revoke_provider_connection: (connection_id: string) =>
+        post_empty(path_of("/v1/vault/connections", connection_id, "/revoke"), C.Revoked),
+      assign_connection: (connection_id: string, machine_id: string) =>
+        post(
+          "/v1/vault/assignments",
+          C.AssignReq,
+          { connectionId: connection_id, machineId: machine_id },
+          C.AssignResp,
+          malformed,
+        ),
+      unassign_connection: (connection_id: string, machine_id: string) =>
+        post(
+          "/v1/vault/assignments/remove",
+          C.AssignReq,
+          { connectionId: connection_id, machineId: machine_id },
+          C.Unassigned,
+          malformed,
+        ),
+      artifacts: get(HttpClientRequest.get("/v1/engine-artifacts"), C.ArtifactListResp),
+      revoke_artifact: (artifact_id: string) =>
+        post_empty(path_of("/v1/engine-artifacts", artifact_id, "/revoke"), C.Revoked),
+      assign_artifact: (artifact_id: string, machine_id: string) =>
+        post(
+          "/v1/engine-artifacts/assignments",
+          C.ArtifactAssignReq,
+          { artifactId: artifact_id, machineId: machine_id },
+          C.ArtifactAssignResp,
+          malformed,
+        ),
+      unassign_artifact: (artifact_id: string, machine_id: string) =>
+        post(
+          "/v1/engine-artifacts/assignments/remove",
+          C.ArtifactAssignReq,
+          { artifactId: artifact_id, machineId: machine_id },
+          C.Unassigned,
+          malformed,
+        ),
+      publish_bundle: (manifest: C.EditorManifest) =>
+        post("/v1/config/bundles", C.BundlePublishReq, { manifest }, C.BundleInfo, malformed),
+      latest_bundle: get(HttpClientRequest.get("/v1/config/bundles/latest"), C.BundleLatestResp),
+      config_state: (machine_id: string) =>
+        get(
+          HttpClientRequest.get("/v1/config/state").pipe(HttpClientRequest.setUrlParam("machineId", machine_id)),
+          C.ConfigStateResp,
+        ),
+      activity: (limit: number) =>
+        get(
+          HttpClientRequest.get("/v1/activity").pipe(HttpClientRequest.setUrlParam("limit", String(limit))),
+          C.ActivityResp,
+        ),
+      request_deletion: (totp_code: Option.Option<string>) =>
+        post(
+          "/v1/account/deletion/request",
+          C.DeletionRequestReq,
+          Option.match(totp_code, { onNone: () => ({}), onSome: (code) => ({ totpCode: code }) }),
+          C.DeletionStatusResp,
+          malformed,
+        ),
+      deletion_status: get(HttpClientRequest.get("/v1/account/deletion"), C.DeletionStatusResp),
+      cancel_deletion: post_empty("/v1/account/deletion/cancel", C.DeletionStatusResp),
+      version: get(HttpClientRequest.get("/v1/version"), C.VersionResp),
+    };
+  });
 
-  revoke_current_session() {
-    return this.post("/v1/sessions/current/revoke", null, null, Schema.Struct({ revoked: Schema.Boolean }));
-  }
-
-  revoke_all_sessions() {
-    return this.post("/v1/sessions/revoke-all", null, null, Schema.Struct({ revoked: Schema.Boolean }));
-  }
-
-  // -- machines ------------------------------------------------------------
-
-  claim_enrollment(code: string) {
-    return this.post("/v1/machines/enrollments/claim", C.EnrollmentClaimReq, { code }, C.EnrollmentClaimResp);
-  }
-
-  machines() {
-    return this.get("/v1/machines", C.MachineListResp);
-  }
-
-  revoke_machine(id: string) {
-    return this.post(`/v1/machines/${encodeURIComponent(id)}/revoke`, null, null, Schema.Struct({ revoked: Schema.Boolean }));
-  }
-
-  // -- grants ----------------------------------------------------------------
-
-  issue_grant(body: typeof C.GrantIssueReq.Type) {
-    return run_promise(issue_grant_effect(this.fetch_impl, this.base, body));
-  }
-
-  // -- vault ------------------------------------------------------------------
-
-  provider_connections() {
-    return this.get("/v1/vault/connections", C.ProviderListResp);
-  }
-
-  create_provider_connection(provider: typeof C.ProviderKind.Type, label: string, api_key: string) {
-    return this.post("/v1/vault/connections", C.ProviderCreateReq, { provider, label, apiKey: api_key }, C.ProviderInfo);
-  }
-
-  revoke_provider_connection(id: string) {
-    return this.post(`/v1/vault/connections/${encodeURIComponent(id)}/revoke`, null, null, Schema.Struct({ revoked: Schema.Boolean }));
-  }
-
-  assign_connection(connection_id: string, machine_id: string) {
-    return this.post("/v1/vault/assignments", C.AssignReq, { connectionId: connection_id, machineId: machine_id }, C.AssignResp);
-  }
-
-  unassign_connection(connection_id: string, machine_id: string) {
-    return this.post("/v1/vault/assignments/remove", C.AssignReq, { connectionId: connection_id, machineId: machine_id }, Schema.Struct({ unassigned: Schema.Boolean }));
-  }
-
-  // -- engine artifacts ----------------------------------------------------------
-
-  artifacts() {
-    return this.get("/v1/engine-artifacts", C.ArtifactListResp);
-  }
-
-  revoke_artifact(id: string) {
-    return this.post(`/v1/engine-artifacts/${encodeURIComponent(id)}/revoke`, null, null, Schema.Struct({ revoked: Schema.Boolean }));
-  }
-
-  assign_artifact(artifact_id: string, machine_id: string) {
-    return this.post(
-      "/v1/engine-artifacts/assignments",
-      C.ArtifactAssignReq,
-      { artifactId: artifact_id, machineId: machine_id },
-      C.ArtifactAssignResp,
+export class CoreApi extends Context.Service<CoreApi, Effect.Success<ReturnType<typeof make>>>()(
+  "@artisanstreet/core-client/CoreApi",
+) {
+  static readonly layer = (
+    base: string,
+    fetch: typeof globalThis.fetch,
+    active_account: Effect.Effect<Option.Option<string>> = Effect.succeedNone,
+  ) =>
+    Layer.effect(CoreApi, make(base, active_account)).pipe(
+      Layer.provide(
+        FetchHttpClient.layer.pipe(
+          Layer.provide(
+            Layer.mergeAll(
+              Layer.succeed(FetchHttpClient.Fetch)(fetch),
+              Layer.succeed(FetchHttpClient.RequestInit)({ credentials: "include" }),
+              Layer.succeed(HttpClient.TracerPropagationEnabled)(false),
+            ),
+          ),
+        ),
+      ),
     );
-  }
-
-  unassign_artifact(artifact_id: string, machine_id: string) {
-    return this.post(
-      "/v1/engine-artifacts/assignments/remove",
-      C.ArtifactAssignReq,
-      { artifactId: artifact_id, machineId: machine_id },
-      Schema.Struct({ unassigned: Schema.Boolean }),
-    );
-  }
-
-  // -- editor config ----------------------------------------------------------------
-
-  publish_bundle(manifest: typeof C.EditorManifest.Type) {
-    return this.post("/v1/config/bundles", C.BundlePublishReq, { manifest }, C.BundleInfo);
-  }
-
-  latest_bundle() {
-    return this.get("/v1/config/bundles/latest", C.BundleLatestResp);
-  }
-
-  config_state(machine_id: string) {
-    return this.get(`/v1/config/state?machineId=${encodeURIComponent(machine_id)}`, C.ConfigStateResp);
-  }
-
-  // -- activity + deletion --------------------------------------------------------------
-
-  activity(limit = 50) {
-    return this.get(`/v1/activity?limit=${encodeURIComponent(String(limit))}`, C.ActivityResp);
-  }
-
-  request_deletion(totp_code?: string) {
-    return this.post("/v1/account/deletion/request", C.DeletionRequestReq, { totpCode: totp_code }, C.DeletionStatusResp);
-  }
-
-  deletion_status() {
-    return this.get("/v1/account/deletion", C.DeletionStatusResp);
-  }
-
-  cancel_deletion() {
-    return this.post("/v1/account/deletion/cancel", null, null, C.DeletionStatusResp);
-  }
-
-  version() {
-    return this.get("/v1/version", C.VersionResp);
-  }
 }
