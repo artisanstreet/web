@@ -6,7 +6,7 @@
     text,
     working = false,
     leading,
-  }: { title: string; text?: string; working?: boolean; leading?: Snippet } = $props();
+  }: { title: string; text?: string | Snippet; working?: boolean; leading?: Snippet } = $props();
 </script>
 
 <div class="heading">
@@ -14,7 +14,13 @@
   <div class="words">
     <h1 data-working={working}>{title}</h1>
     {#if text}
-      <p>{text}</p>
+      <p>
+        {#if typeof text === "string"}
+          {text}
+        {:else}
+          {@render text()}
+        {/if}
+      </p>
     {/if}
   </div>
 </div>
