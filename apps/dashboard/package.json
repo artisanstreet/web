@@ -13,7 +13,7 @@
     "dev": "vp dev --port 5101",
     "build": "vp build",
     "sync": "svelte-kit sync",
-    "typecheck": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "typecheck": "svelte-kit sync && tsrs --noEmit",
     "test": "vp test run"
   },
   "dependencies": {
