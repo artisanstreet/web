@@ -1,5 +1,5 @@
 import { Match } from "effect";
-import type { CoreFailure, InvalidEmail } from "../core/errors.ts";
+import type { CoreFailure, InvalidEmail } from "@artisanstreet/core-client";
 import type { FinalizeFailure, RequestLost } from "./state.ts";
 
 export type SignInFailure = CoreFailure | InvalidEmail | FinalizeFailure | RequestLost;
@@ -8,17 +8,18 @@ export const friendly_error = (failure: SignInFailure): string =>
   Match.valueTags(failure, {
     ApiFailure: ({ status, message }) =>
       Match.value(status).pipe(
-        Match.when(429, () => "Too many attempts. Wait a little and try again."),
-        Match.when((code) => code >= 500, () => "The account service had a problem. Try again in a bit."),
+        Match.when(429, () => "Easy there, that was a lot of attempts. Wait a minute, then try again."),
+        Match.when((code) => code >= 500, () => "Our account service hit an error on its side. Try again in a moment."),
         Match.orElse(() => message),
       ),
-    TransportFailure: () => "The account service is unreachable. Try again in a bit.",
-    DecodeFailure: () => "The account service answered with an unreadable response.",
-    InvalidEmail: () => "Enter a valid email address.",
-    FinalizeExpired: () => "This sign-in request expired. Start over.",
-    FinalizeNotApproved: () => "The emailed link has not been approved yet. Approve it first.",
+    TransportFailure: () => "We couldn't reach the account service. Check your connection and try again.",
+    DecodeFailure: () => "The account service answered with something we couldn't read. Try again in a moment.",
+    InvalidRequest: () => "We couldn't put that request together. Reload the page and try again.",
+    InvalidEmail: () => "That doesn't look like an email address. Check for typos and try again.",
+    FinalizeExpired: () => "This sign-in request timed out. Start again to get a fresh link.",
+    FinalizeNotApproved: () => "The emailed link hasn't been approved yet. Open it from your inbox first.",
     FinalizeMissingSecret: () =>
-      "This browser did not start the sign-in, so it cannot finish it. Finish on the browser that requested the link.",
-    FinalizeTotpRequired: () => "This account needs its authenticator code (or a recovery code).",
-    RequestLost: () => "This browser lost track of the request. Start over.",
+      "This browser didn't start the sign-in, so it can't finish it. Finish on the browser you requested the link from.",
+    FinalizeTotpRequired: () => "This account needs a second factor. Enter your authenticator code or a recovery code.",
+    RequestLost: () => "This browser lost track of the sign-in request. Start again.",
   });

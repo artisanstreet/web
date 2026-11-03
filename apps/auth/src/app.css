@@ -2,6 +2,27 @@
   box-sizing: border-box;
 }
 
+:root {
+  --duration-micro: 80ms;
+  --duration-quick: 150ms;
+  --duration-fast: 250ms;
+  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --revert-dur: 280ms;
+  --icon-swap-dur: 250ms;
+  --icon-swap-blur: 2px;
+  --icon-swap-start-scale: 0.25;
+  --icon-swap-ease: ease-in-out;
+  --resize-dur: 300ms;
+  --page-slide-dur: 250ms;
+  --page-fade-dur: 250ms;
+  --page-slide-distance: 8px;
+  --page-blur: 3px;
+  --page-stagger: 0ms;
+  --page-exit-enabled: 1;
+  --page-slide-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --page-fade-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 html,
 body {
   margin: 0;

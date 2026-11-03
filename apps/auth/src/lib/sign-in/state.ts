@@ -1,5 +1,5 @@
 import { Data, Effect, Match, Option } from "effect";
-import type { LoginStatus } from "../core/contract.ts";
+import { SecondFactor, type FinalizePayload, type LoginStatus } from "@artisanstreet/core-client";
 
 export interface LoginState {
   readonly request_id: string;
@@ -7,20 +7,6 @@ export interface LoginState {
   readonly expires_at: string;
   readonly phase: LoginStatus;
   readonly totp_required: boolean;
-}
-
-export type SecondFactor = Data.TaggedEnum<{
-  None: {};
-  Totp: { readonly code: string };
-  Recovery: { readonly code: string };
-}>;
-
-export const SecondFactor = Data.taggedEnum<SecondFactor>();
-
-export interface FinalizePayload {
-  readonly request_id: string;
-  readonly request_secret: string;
-  readonly factor: SecondFactor;
 }
 
 export class FinalizeExpired extends Data.TaggedError("FinalizeExpired") {}

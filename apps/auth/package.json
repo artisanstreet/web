@@ -17,6 +17,7 @@
     "test": "vp test run"
   },
   "dependencies": {
+    "@artisanstreet/core-client": "workspace:*",
     "@artisanstreet/ui": "workspace:*",
     "@internationalized/date": "3.12.4",
     "@sveltejs/kit": "3.1.0",

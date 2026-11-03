@@ -1,16 +1,25 @@
-import { Data, Effect, Match, Option, Schedule } from "effect";
-import { CoreApi } from "../core/api.ts";
-import type { MagicRequestResp, MagicStatusResp } from "../core/contract.ts";
-import { is_transient } from "../core/errors.ts";
-import { friendly_error } from "./messages.ts";
-import { finalize_payload, RequestLost, SecondFactor, type LoginState } from "./state.ts";
+import { Data, Effect, Match, Option, Queue, Schedule, Stream } from "effect";
+import { CoreApi, is_transient, SecondFactor, type MagicRequestResp, type MagicStatusResp } from "@artisanstreet/core-client";
+import { approved_for, Handoff, HandoffChannel } from "./handoff.ts";
+import { friendly_error, type SignInFailure } from "./messages.ts";
+import { finalize_payload, RequestLost, type LoginState } from "./state.ts";
 import { clear_secret, load_secret, store_secret } from "./storage.ts";
+import type { OauthProblem, Provider } from "./oauth.ts";
+
+export type FinishProblem = Data.TaggedEnum<{
+  CodeRejected: {};
+  Failed: { readonly message: string };
+}>;
+
+export const FinishProblem = Data.taggedEnum<FinishProblem>();
 
 export type Flow = Data.TaggedEnum<{
   Idle: {};
+  Redirecting: { readonly provider: Provider };
+  ProviderFailed: { readonly provider: Provider; readonly problem: OauthProblem };
   Sending: {};
   Waiting: { readonly login: LoginState };
-  Approved: { readonly login: LoginState; readonly error: Option.Option<string> };
+  Approved: { readonly login: LoginState; readonly error: Option.Option<FinishProblem> };
   Finishing: { readonly login: LoginState };
   Expired: {};
   Failed: { readonly message: string };
@@ -55,15 +64,49 @@ const status_of = (login: LoginState) =>
       .pipe(Effect.retry({ while: is_transient, times: 10, schedule: Schedule.spaced("3 seconds") }));
   });
 
-const await_settled = (login: LoginState): Effect.Effect<LoginState, Effect.Error<ReturnType<typeof status_of>>, CoreApi> =>
+const await_settled = (
+  login: LoginState,
+  wake: Effect.Effect<void>,
+): Effect.Effect<LoginState, Effect.Error<ReturnType<typeof status_of>>, CoreApi> =>
   status_of(login).pipe(
     Effect.map((status) => settle(login, status)),
     Effect.flatMap((next) =>
       next.phase === "pending"
-        ? Effect.sleep("3 seconds").pipe(Effect.andThen(Effect.suspend(() => await_settled(next))))
+        ? Effect.raceFirst(Effect.sleep("3 seconds"), wake).pipe(
+            Effect.andThen(Effect.suspend(() => await_settled(next, wake))),
+          )
         : Effect.succeed(next),
     ),
   );
+
+const answer_handoffs = (login: LoginState, wake: Queue.Queue<void>) =>
+  Effect.gen(function* () {
+    const channel = yield* HandoffChannel;
+    const subscription = yield* channel.subscribe;
+    yield* Stream.fromSubscription(subscription).pipe(
+      Stream.filter(approved_for(login.request_id)),
+      Stream.runForEach(() =>
+        channel
+          .post(Handoff.cases.Present.make({ request_id: login.request_id }))
+          .pipe(Effect.andThen(Queue.offer(wake, undefined))),
+      ),
+      Effect.forkScoped,
+    );
+  });
+
+const await_approval = (login: LoginState) =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const wake = yield* Queue.sliding<void>(1);
+      yield* answer_handoffs(login, wake);
+      return yield* await_settled(login, Queue.take(wake));
+    }),
+  );
+
+export const finish_problem = (failure: SignInFailure, factor: SecondFactor): FinishProblem =>
+  failure._tag === "ApiFailure" && failure.status === 403 && !SecondFactor.$is("None")(factor)
+    ? FinishProblem.CodeRejected()
+    : FinishProblem.Failed({ message: friendly_error(failure) });
 
 const finalize = (login: LoginState, factor: SecondFactor) =>
   Effect.gen(function* () {
@@ -86,14 +129,18 @@ export const complete = (login: LoginState, factor: SecondFactor, destination: s
       emit(
         login.phase === "completed"
           ? Flow.Failed({ message: friendly_error(failure) })
-          : Flow.Approved({ login, error: Option.some(friendly_error(failure)) }),
+          : Flow.Approved({ login, error: Option.some(finish_problem(failure, factor)) }),
       ),
     ),
   );
 
 const settled = (login: LoginState, destination: string, emit: Emit) =>
   Match.value(login.phase).pipe(
-    Match.when("email_approved", () => emit(Flow.Approved({ login, error: Option.none() }))),
+    Match.when("email_approved", () =>
+      login.totp_required
+        ? emit(Flow.Approved({ login, error: Option.none() }))
+        : complete(login, SecondFactor.None(), destination, emit),
+    ),
     Match.when("completed", () => complete(login, SecondFactor.None(), destination, emit)),
     Match.when("expired", () => clear_secret(login.request_id).pipe(Effect.andThen(emit(Flow.Expired())))),
     Match.when("pending", () => emit(Flow.Waiting({ login }))),
@@ -105,7 +152,7 @@ export const sign_in = (email: string, destination: string, emit: Emit) =>
     yield* emit(Flow.Sending());
     const login = yield* request(email.trim());
     yield* emit(Flow.Waiting({ login }));
-    const result = yield* await_settled(login);
+    const result = yield* await_approval(login).pipe(Effect.tapError(() => clear_secret(login.request_id)));
     yield* settled(result, destination, emit);
   }).pipe(Effect.catch((failure) => emit(Flow.Failed({ message: friendly_error(failure) }))));
 
@@ -113,6 +160,8 @@ const none = () => Option.none<string>();
 
 const login_of = Flow.$match({
   Idle: () => Option.none<LoginState>(),
+  Redirecting: () => Option.none<LoginState>(),
+  ProviderFailed: () => Option.none<LoginState>(),
   Sending: () => Option.none<LoginState>(),
   Waiting: ({ login }) => Option.some(login),
   Approved: ({ login }) => Option.some(login),
@@ -130,11 +179,32 @@ export const abandon = (flow: Flow): Effect.Effect<void> =>
 
 export const failure_message = Flow.$match({
   Idle: none,
+  Redirecting: none,
+  ProviderFailed: none,
   Sending: none,
   Waiting: none,
-  Approved: ({ error }) => error,
+  Approved: ({ error }) =>
+    Option.flatMap(
+      error,
+      FinishProblem.$match({ CodeRejected: () => Option.none<string>(), Failed: ({ message }) => Option.some(message) }),
+    ),
   Finishing: none,
-  Expired: () => Option.some("This sign-in link expired. Request a fresh one."),
+  Expired: () => Option.some("This sign-in link has expired. Request a fresh one and open it within a few minutes."),
   Failed: ({ message }) => Option.some(message),
   SignedIn: none,
+});
+
+const unchanged = (flow: Flow): Flow => flow;
+
+export const edited: (flow: Flow) => Flow = Flow.$match({
+  Idle: unchanged,
+  Redirecting: unchanged,
+  ProviderFailed: () => Flow.Idle(),
+  Sending: unchanged,
+  Waiting: unchanged,
+  Approved: ({ login }) => Flow.Approved({ login, error: Option.none() }),
+  Finishing: unchanged,
+  Expired: () => Flow.Idle(),
+  Failed: () => Flow.Idle(),
+  SignedIn: unchanged,
 });
