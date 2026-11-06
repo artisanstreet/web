@@ -543,6 +543,10 @@ export const OauthSignupReq = Schema.Struct({
   displayName: at_most(120),
 });
 
+export const DesktopGrantReq = Schema.Struct({ challenge: Base64url32 });
+
+export const DesktopGrantResp = Schema.Struct({ code: Schema.String, expires_at: Rfc3339 });
+
 export const SignInMethod = Schema.Struct({ kind: SignInKind, created_at: Rfc3339 });
 
 export const SignInMethodsResp = Schema.Struct({ email: Email, methods: Schema.Array(SignInMethod) });
@@ -604,4 +608,5 @@ export type SignInKind = typeof SignInKind.Type;
 export type OauthProvider = typeof OauthProvider.Type;
 export type OauthStartResp = typeof OauthStartResp.Type;
 export type OauthCallbackResp = typeof OauthCallbackResp.Type;
+export type DesktopGrantResp = typeof DesktopGrantResp.Type;
 export type SignInMethodsResp = typeof SignInMethodsResp.Type;

@@ -148,6 +148,18 @@ describe("CoreApi requests", () => {
     expect(sent).toHaveLength(0);
   });
 
+  it("asks for a desktop code with the challenge and refuses a malformed one without calling Core", async () => {
+    const challenge = "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM";
+    const { sent, run } = core([reply(200, { code: "dsk_code", expires_at: "2026-11-06T12:05:00Z" })]);
+    const granted = await run((api) => api.desktop_grant(challenge));
+    const refused = await run((api) => api.desktop_grant("short"));
+    expect(Exit.isSuccess(granted)).toBe(true);
+    expect(failure_of(refused)).toEqual(new InvalidRequest({ reason: "malformed request" }));
+    expect(sent.map(({ method, url, credentials, body }) => [method, url, credentials, body])).toEqual([
+      ["POST", "http://core.test/v1/auth/desktop/grant", "include", { challenge }],
+    ]);
+  });
+
   it("refuses request bodies with fields Core does not know", async () => {
     const { sent, run } = core([reply(200, {})]);
     const grant = { audience: "ast-core", scope: ["machine:sync"], admin: true } as const;
