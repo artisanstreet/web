@@ -1,7 +1,7 @@
 {
-  "core_commit": "7925c9ba53b639e775eaed071a9a7dea80be3f20",
+  "core_commit": "eec02039349fd19edaee2c8cf313927bd4146e18",
   "source_path": "core/src/contracts/v1.ts",
-  "source_sha256": "cfa707d12e226b84a906087df4a69cfa0f01b4cf11e5b696042b2b4577cd487f",
+  "source_sha256": "b8592575fe8b7baff02bf088c68c4f1138cf8e49c1e0ff72910c87fe8e7aa4f3",
   "copy_path": "packages/core-client/src/contract-v1.ts",
   "copy_method": "manual port of the Effect 3 source schemas to Effect 4 Schema APIs; field names, literals and patterns kept wire-identical; server-only helpers (decode_request, encode_response, json_schema_for) omitted",
   "note": "Independent repo build must not depend on sibling checkout in CI. Re-port from the announced Core commit and update this file + source_sha256 + core_commit together."
