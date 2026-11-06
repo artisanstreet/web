@@ -152,6 +152,8 @@ const make = (base: string, active_account: Effect.Effect<Option.Option<string>>
           C.MagicFinalizeResp,
           malformed,
         ),
+      desktop_grant: (challenge: string) =>
+        post("/v1/auth/desktop/grant", C.DesktopGrantReq, { challenge }, C.DesktopGrantResp, malformed),
       sign_in_methods: get(HttpClientRequest.get("/v1/account/sign-in-methods"), C.SignInMethodsResp),
       link_sign_in: (provider: C.OauthProvider, account: Option.Option<string>) =>
         post(

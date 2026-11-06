@@ -17,10 +17,10 @@
     provider_return_of,
     ProviderReturn,
     recall,
-    sign_in_url_with,
     type PendingFlow,
     type Profile,
   } from "../../../lib/sign-in/oauth.ts";
+  import { Back, back_of, leave_for_editor, recall_handoff, Setback } from "../../../lib/desktop/handoff.ts";
   import FeedbackLabel from "../../../lib/feedback/feedback.svelte";
   import AuthCard from "../../../lib/shell/auth-card.svelte";
   import Field from "../../../lib/shell/field.svelte";
@@ -35,10 +35,24 @@
 
   const left = (destination: string) => leave_for(destination).pipe(Effect.as(Callback.Working()));
 
+  const back = (setback: Setback, stay: Callback) =>
+    recall_handoff.pipe(
+      Effect.flatMap((handoff) =>
+        Back.$match(back_of(handoff, setback), {
+          SignIn: ({ url }) => left(url),
+          Editor: ({ url }) => leave_for_editor(url).pipe(Effect.as(Callback.Working())),
+          Stay: () => Effect.succeed(stay),
+        }),
+      ),
+    );
+
+  const provider_back = (pending: PendingFlow, problem: OauthProblem) =>
+    back(Setback.Provider({ provider: pending.provider, problem }), Callback.Working());
+
   const land = (pending: PendingFlow) =>
     Landing.$match({
       Enter: ({ destination }) => left(destination),
-      Back: ({ problem }) => left(sign_in_url_with(pending.provider, problem)),
+      Back: ({ problem }) => provider_back(pending, problem),
       SecondFactor: () =>
         Effect.succeed(Callback.SecondFactor({ pending, error: Option.none(), verifying: false })),
       Signup: ({ profile }) =>
@@ -52,12 +66,12 @@
     const pending = yield* recall;
     return yield* ProviderReturn.$match(provider_return_of(page.url), {
       Code: ({ code, state }) => exchange(pending, code, state).pipe(Effect.flatMap(land(pending))),
-      Refused: () => left(sign_in_url_with(pending.provider, OauthProblem.Denied())),
+      Refused: () => provider_back(pending, OauthProblem.Denied()),
       Malformed: () => Effect.fail(new FlowLost()),
     });
   }).pipe(
-    Effect.catchTag("FlowLost", () => Effect.succeed(Callback.Lost())),
-    Effect.catch((failure) => Effect.succeed(Callback.Failed({ message: friendly_error(failure) }))),
+    Effect.catchTag("FlowLost", () => back(Setback.Lost(), Callback.Lost())),
+    Effect.catch((failure) => back(Setback.Failed(), Callback.Failed({ message: friendly_error(failure) }))),
   );
 
   let view: Callback = $state(Callback.Working());
