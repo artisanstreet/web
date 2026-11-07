@@ -124,7 +124,7 @@
   });
 
   const choose_avatar = (event: Event) => Effect.gen(function* () {
-    const input = event.currentTarget;
+    const input = event.target;
     if (!(input instanceof HTMLInputElement) || busy) return;
     const file = input.files?.[0];
     input.value = "";
