@@ -1,5 +1,6 @@
 <script lang="ts" effect>
   import { Data, Effect, Option } from "effect";
+  import { Dialog } from "bits-ui";
   import { CoreApi, type ProfileResp } from "@artisanstreet/core-client";
   import AvatarCrop from "./avatar-crop.svelte";
   import { crop_bounds, type Framing, type ImageSize } from "./avatar-crop.ts";
@@ -219,14 +220,7 @@
             <input class="file-input" type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onchange={yield* choose_avatar(event)} />
           </label>
           </div>
-          {#if Option.isSome(selected_image)}
-            <AvatarCrop image={selected_image.value} bind:framing disabled={busy} />
-            <div class="avatar-actions">
-              <Button disabled={busy} onclick={cancel_avatar}>Cancel</Button>
-              <Button tone="sand" disabled={busy} onclick={yield* save_avatar}>{saving_avatar ? "Saving…" : "Save avatar"}</Button>
-            </div>
-          {/if}
-          {#if avatar_error}<p class="error" role="alert">{avatar_error}</p>{/if}
+          {#if avatar_error && Option.isNone(selected_image)}<p class="error" role="alert">{avatar_error}</p>{/if}
         </div>
         <div class="field field-form">
           <div class="field-copy">
@@ -295,6 +289,27 @@
   <p class="hint" role="status">Loading profile…</p>
 {/if}
 
+<Dialog.Root open={Option.isSome(selected_image)} onOpenChange={(open) => { if (!open && !busy) cancel_avatar(); }}>
+  <Dialog.Portal>
+    <Dialog.Overlay class="avatar-crop-overlay" />
+    <Dialog.Content class="avatar-crop-dialog" aria-describedby="avatar-crop-help" onEscapeKeydown={(event) => { if (busy) event.preventDefault(); }} onInteractOutside={(event) => { if (busy) event.preventDefault(); }}>
+      <Card surface="var(--card-inner)" radius="var(--radius-lg)">
+        <div class="avatar-dialog-body">
+          <Dialog.Title class="avatar-crop-title">Crop avatar</Dialog.Title>
+          {#if Option.isSome(selected_image)}
+            <AvatarCrop image={selected_image.value} bind:framing disabled={busy} />
+          {/if}
+          {#if avatar_error}<p class="error" role="alert">{avatar_error}</p>{/if}
+          <div class="avatar-actions">
+            <Button disabled={busy} onclick={cancel_avatar}>Cancel</Button>
+            <Button tone="sand" disabled={busy} onclick={yield* save_avatar}>{saving_avatar ? "Saving…" : "Save avatar"}</Button>
+          </div>
+        </div>
+      </Card>
+    </Dialog.Content>
+  </Dialog.Portal>
+</Dialog.Root>
+
 <style>
   .profile-card { display: flex; flex: 1; min-height: 0; }
   .profile-card > :global(.card) > :global(.outline) { z-index: 4; }
@@ -335,6 +350,10 @@
   .username-input { display: flex; align-items: center; }
   .username-input span { position: relative; z-index: 2; padding-left: var(--sp-3); color: var(--ink-dim); }
   .username-input input { flex: 1; width: 0; padding-left: var(--sp-1); }
+  :global(.avatar-crop-overlay) { position: fixed; inset: 0; z-index: 100; background: oklch(0 0 0 / 0.65); backdrop-filter: blur(6px); }
+  :global(.avatar-crop-dialog) { position: fixed; z-index: 101; top: 50%; left: 50%; width: min(26rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); overflow-y: auto; border-radius: var(--radius-lg); outline: none; transform: translate(-50%, -50%); }
+  :global(.avatar-crop-title) { margin: 0; color: var(--ink); font-size: 1rem; font-weight: 600; line-height: 1.4; }
+  .avatar-dialog-body { position: relative; z-index: 2; display: flex; flex-direction: column; gap: var(--sp-4); padding: var(--sp-6); }
   .avatar-row { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); }
   .avatar-actions { display: flex; justify-content: flex-end; gap: var(--sp-2); }
   .avatar-control:has(input:focus-visible) { outline: 2px solid var(--focus); outline-offset: 3px; }
