@@ -10,6 +10,7 @@
     "./tokens.css": "./src/styles/tokens.css",
     "./base.css": "./src/styles/base.css",
     "./surfaces.css": "./src/styles/surfaces.css",
+    "./secondary-button.css": "./src/styles/secondary-button.css",
     "./stylex-dev": "./src/stylex-dev.tsx"
   },
   "main": "./src/index.ts",

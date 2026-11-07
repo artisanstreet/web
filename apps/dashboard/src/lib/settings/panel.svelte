@@ -248,14 +248,14 @@
             {#snippet action()}
               {#if MethodRow.$is("Linked")(method)}
                 {#if !confirming}
-                  <div class="method-action"><Card surface="var(--bg)" radius="var(--radius-sm)"><Button disabled={busy || !method.removable} title={!method.removable ? "Keep at least one sign-in method" : undefined} onclick={ask(() => (removing = Option.some(kind)))}>{kind === "email" ? "Turn off" : "Unlink"}</Button></Card></div>
+                  <div class="method-action"><Button tone="secondary" disabled={busy || !method.removable} title={!method.removable ? "Keep at least one sign-in method" : undefined} onclick={ask(() => (removing = Option.some(kind)))}>{kind === "email" ? "Turn off" : "Unlink"}</Button></div>
                 {/if}
               {:else if kind === "email"}
-                <div class="method-action"><Card surface="var(--bg)" radius="var(--radius-sm)"><Button disabled={busy} onclick={yield* act("methods", enable_email, "Email links work again.")}>
+                <div class="method-action"><Button tone="secondary" disabled={busy} onclick={yield* act("methods", enable_email, "Email links work again.")}>
                   Turn on
-                </Button></Card></div>
+                </Button></div>
               {:else}
-                <div class="method-action"><Card surface="var(--bg)" radius="var(--radius-sm)"><a class="link-button" href={link_url(kind, snapshot.me.account_id)}>Link</a></Card></div>
+                <div class="method-action"><a class="secondary-button" href={link_url(kind, snapshot.me.account_id)}>Link</a></div>
               {/if}
             {/snippet}
             {#if confirming}
@@ -275,7 +275,7 @@
                   >
                     Remove {kind_names[kind]}
                   </Button>
-                  <Button disabled={busy} onclick={reset}>Cancel</Button>
+                  <Button tone="secondary" disabled={busy} onclick={reset}>Cancel</Button>
                 </div>
               </div>
             {/if}
@@ -293,7 +293,7 @@
         >
           {#snippet action()}
             {#if totp_on && !turning_off}
-              <Button disabled={busy} onclick={ask(() => (turning_off = true))}>Turn off</Button>
+              <Button tone="secondary" disabled={busy} onclick={ask(() => (turning_off = true))}>Turn off</Button>
             {:else if !totp_on && Option.isNone(enrollment)}
               <Button tone="sand" disabled={busy} onclick={yield* begin_enrollment}>Set up</Button>
             {/if}
@@ -329,7 +329,7 @@
               >
                 Turn on
               </Button>
-              <Button disabled={busy} onclick={reset}>Cancel</Button>
+              <Button tone="secondary" disabled={busy} onclick={reset}>Cancel</Button>
             </div>
           {:else if turning_off}
             <div class="confirm">
@@ -343,7 +343,7 @@
                 >
                   Turn off
                 </Button>
-                <Button disabled={busy} onclick={reset}>Cancel</Button>
+                <Button tone="secondary" disabled={busy} onclick={reset}>Cancel</Button>
               </div>
             </div>
           {/if}
@@ -438,7 +438,7 @@
                   >
                     Delete my account
                   </Button>
-                  <Button disabled={busy} onclick={reset}>Cancel</Button>
+                  <Button tone="secondary" disabled={busy} onclick={reset}>Cancel</Button>
                 </div>
               </div>
             {/if}
@@ -689,30 +689,6 @@
   .method-icon { display: block; flex: none; color: var(--ink-dim); }
   .provider-icon { width: 20px; height: 20px; background: var(--ink-dim); mask: var(--icon) center / contain no-repeat; }
   .method-action { display: flex; }
-  .method-action :global(.button), .method-action .link-button { position: relative; z-index: 2; background: transparent; box-shadow: none; }
-  .method-action :global(.button:hover:enabled), .method-action .link-button:hover { background: var(--hover-fill); }
-
-  .link-button {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--sp-2);
-    min-height: 2.25rem;
-    padding: var(--sp-1) var(--sp-3);
-    font-size: 0.875rem;
-    font-weight: 500;
-    line-height: 1.25rem;
-    color: var(--ink);
-    text-decoration: none;
-    border-radius: calc(var(--radius-md) - 6px);
-    background: var(--hover-fill);
-    box-shadow: inset 0 0 0 0.5px var(--hover-edge);
-  }
-
-  .link-button:focus-visible {
-    outline: 2px solid var(--focus);
-    outline-offset: 2px;
-  }
-
   .confirm,
   .steps,
   .recovery {

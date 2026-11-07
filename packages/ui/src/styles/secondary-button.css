@@ -1,0 +1,59 @@
+.secondary-button.secondary-button {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: var(--secondary-button-height, 2.25rem);
+  padding: var(--sp-1) var(--sp-3);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  text-decoration: none;
+  border: 1px solid color-mix(in oklch, var(--bg), var(--ink) 4%);
+  border-radius: var(--secondary-button-radius, calc(var(--radius-md) - 6px));
+  background: radial-gradient(ellipse 70% 110% at 50% 115%, color-mix(in oklch, var(--bg), var(--ink) 7%), var(--bg) 70%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklch, var(--bg), var(--ink) 12%),
+    inset 0 -1px 0 color-mix(in oklch, var(--bg), oklch(0 0 0) 25%),
+    inset 0 2px 4px oklch(0 0 0 / 0.18),
+    var(--shadow-rest);
+  cursor: pointer;
+  transform: translateY(0);
+  transition:
+    transform var(--duration-quick) var(--ease-smooth-out),
+    box-shadow var(--duration-quick) var(--ease-smooth-out);
+}
+
+.secondary-button.secondary-button:visited {
+  color: var(--ink);
+}
+
+.secondary-button.secondary-button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.secondary-button.secondary-button:active:not(:disabled) {
+  transform: translateY(1.5px);
+  box-shadow:
+    inset 0 1px 0 oklch(0 0 0 / 0.5),
+    inset 0 2px 4px oklch(0 0 0 / 0.45),
+    0 0 1px -1px oklch(0 0 0 / 0.4);
+  transition-duration: var(--duration-micro);
+}
+
+.secondary-button.secondary-button:disabled {
+  color: var(--ink-dim);
+  cursor: default;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .secondary-button.secondary-button {
+    transition: none;
+  }
+}

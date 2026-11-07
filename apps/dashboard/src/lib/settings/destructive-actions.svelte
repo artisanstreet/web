@@ -97,7 +97,7 @@
             {/if}
             {#if error}<p class="disable-error" role="alert">{error}</p>{/if}
             <div class="disable-buttons">
-              <Button disabled={busy} onclick={() => { open = false; }}>Close</Button>
+              <Button tone="secondary" disabled={busy} onclick={() => { open = false; }}>Close</Button>
               {#if mode === "disable"}
                 <Button tone="solid-danger" disabled={busy || waiting} onclick={yield* confirm_disable}>Disable account</Button>
               {:else if deletion?.status !== "pending"}

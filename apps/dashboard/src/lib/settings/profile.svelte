@@ -301,7 +301,7 @@
           {/if}
           {#if avatar_error}<p class="error" role="alert">{avatar_error}</p>{/if}
           <div class="avatar-actions">
-            <Button disabled={busy} onclick={cancel_avatar}>Cancel</Button>
+            <Button tone="secondary" disabled={busy} onclick={cancel_avatar}>Cancel</Button>
             <Button tone="sand" disabled={busy} onclick={yield* save_avatar}>{saving_avatar ? "Saving…" : "Save avatar"}</Button>
           </div>
         </div>

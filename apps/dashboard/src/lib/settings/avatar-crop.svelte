@@ -51,7 +51,7 @@
   <div class="zoom-control">
     <label for="avatar-zoom">Zoom</label>
     <input id="avatar-zoom" type="range" min="1" max="3" step="0.01" value={framing.zoom} {disabled} oninput={(event) => { framing = constrain_framing(image, { ...framing, zoom: event.currentTarget.valueAsNumber }); }} />
-    <Button {disabled} onclick={() => { framing = { x: 0.5, y: 0.5, zoom: 1 }; }}>Reset</Button>
+    <Button tone="secondary" {disabled} onclick={() => { framing = { x: 0.5, y: 0.5, zoom: 1 }; }}>Reset</Button>
   </div>
 </div>
 
