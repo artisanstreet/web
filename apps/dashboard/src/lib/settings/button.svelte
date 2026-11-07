@@ -1,15 +1,16 @@
 <script lang="ts">
+  import "@artisanstreet/ui/secondary-button.css";
   import type { Snippet } from "svelte";
   import type { HTMLButtonAttributes } from "svelte/elements";
 
   let {
-    tone = "plain",
+    tone = "secondary",
     children,
     ...rest
-  }: { tone?: "plain" | "sand" | "danger" | "solid-danger"; children: Snippet } & HTMLButtonAttributes = $props();
+  }: { tone?: "secondary" | "sand" | "danger" | "solid-danger"; children: Snippet } & HTMLButtonAttributes = $props();
 </script>
 
-<button type="button" class="button" data-tone={tone} {...rest}>
+<button type="button" class={["button", tone === "secondary" && "secondary-button"]} data-tone={tone} {...rest}>
   {@render children()}
 </button>
 
@@ -35,15 +36,18 @@
     color: var(--ink);
     cursor: pointer;
     outline: none;
-    border: 1px solid transparent;
     border-radius: calc(var(--radius-md) - 6px);
-    background: var(--hover-fill) padding-box;
-    box-shadow: inset 0 0 0 0.5px var(--hover-edge);
     transform: translateY(0);
     transition:
       transform var(--duration-quick) var(--ease-smooth-out),
       box-shadow var(--duration-quick) var(--ease-smooth-out),
       opacity var(--duration-quick) var(--ease-smooth-out);
+  }
+
+  .button:not(.secondary-button) {
+    border: 1px solid transparent;
+    background: var(--hover-fill) padding-box;
+    box-shadow: inset 0 0 0 0.5px var(--hover-edge);
   }
 
   .button:focus-visible {
@@ -53,10 +57,13 @@
 
   .button:disabled {
     cursor: default;
+  }
+
+  .button:disabled:not(.secondary-button) {
     opacity: 0.55;
   }
 
-  .button:active:enabled {
+  .button:active:enabled:not(.secondary-button) {
     transform: translateY(1px);
     transition-duration: var(--duration-micro);
     transition-timing-function: ease-out;

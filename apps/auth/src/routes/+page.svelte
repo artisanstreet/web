@@ -2,7 +2,7 @@
   import { Effect, Option } from "effect";
   import { page } from "$app/state";
   import { VITE_DASHBOARD_URL } from "$app/env/public";
-  import Card from "../lib/card/card.svelte";
+  import "@artisanstreet/ui/secondary-button.css";
   import FeedbackLabel from "../lib/feedback/feedback.svelte";
   import AuthCard from "../lib/shell/auth-card.svelte";
   import Field from "../lib/shell/field.svelte";
@@ -200,18 +200,16 @@
                 {#each providers as provider (provider.id)}
                   {@const provider_feedback = provider_feedback_of(view, provider.id)}
                   <div class="slot">
-                    <Card surface="var(--bg)" radius="var(--field-radius)" key>
-                      <button
-                        type="button"
-                        class="provider"
-                        aria-label={`Continue with ${provider.name}`}
-                        aria-describedby={`${provider.id}-feedback`}
-                        disabled={busy}
-                        onclick={yield* choose(provider.id)}
-                      >
-                        <span class="icon" style:--icon={`url("${provider.url}")`} aria-hidden="true"></span>
-                      </button>
-                    </Card>
+                    <button
+                      type="button"
+                      class="provider secondary-button"
+                      aria-label={`Continue with ${provider.name}`}
+                      aria-describedby={`${provider.id}-feedback`}
+                      disabled={busy}
+                      onclick={yield* choose(provider.id)}
+                    >
+                      <span class="icon" style:--icon={`url("${provider.url}")`} aria-hidden="true"></span>
+                    </button>
                   </div>
                 {/each}
               </div>
@@ -354,32 +352,6 @@
     flex: 3;
   }
 
-  .provider::before,
-  .provider::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    transition: opacity var(--duration-quick) var(--ease-smooth-out);
-  }
-
-  .provider::before {
-    background: radial-gradient(ellipse 70% 110% at 50% 115%, oklch(1 0 0 / 0.07), oklch(1 0 0 / 0) 70%);
-    opacity: 1;
-  }
-
-  .provider::after {
-    background: radial-gradient(ellipse 90% 120% at 50% -15%, oklch(0 0 0 / 0.45), oklch(0 0 0 / 0) 70%);
-    box-shadow: inset 0 1px 0 oklch(0 0 0 / 0.5);
-    opacity: 0;
-  }
-
-  .provider:active::after {
-    opacity: 1;
-    transition-duration: var(--duration-micro);
-  }
-
   .icon {
     display: block;
     width: 18px;
@@ -400,24 +372,10 @@
   }
 
   .provider {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--sp-2);
+    --secondary-button-radius: var(--field-radius);
+    --secondary-button-height: var(--field-height);
+    flex: 1;
     width: 100%;
-    min-height: var(--field-height);
-    padding: var(--sp-1) var(--sp-3);
-    font: inherit;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    color: var(--ink);
-    background: transparent;
-    border: 0;
-    border-radius: inherit;
-    outline: none;
-    cursor: pointer;
   }
 
 
