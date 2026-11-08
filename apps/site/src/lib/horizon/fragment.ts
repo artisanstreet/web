@@ -33,12 +33,39 @@ vec3 lab_srgb(vec3 lab) {
     return srgb(max(linear_rgb, 0.0));
 }
 
+vec3 gradient_segment(vec3 a, vec3 b, vec3 slope_a, vec3 slope_b, float width, float position) {
+    float t = clamp(position / width, 0.0, 1.0);
+    float t2 = t * t;
+    float t3 = t2 * t;
+    return (2.0 * t3 - 3.0 * t2 + 1.0) * a
+        + (t3 - 2.0 * t2 + t) * width * slope_a
+        + (-2.0 * t3 + 3.0 * t2) * b
+        + (t3 - t2) * width * slope_b;
+}
+
 vec3 sky_color(float altitude) {
-    vec3 lab = mix(oklab(palette_0), oklab(palette_1), smoothstep(0.0, 0.24, altitude));
-    lab = mix(lab, oklab(palette_2), smoothstep(0.24, 0.46, altitude));
-    lab = mix(lab, oklab(palette_3), smoothstep(0.46, 0.68, altitude));
-    lab = mix(lab, oklab(palette_4), smoothstep(0.68, 0.88, altitude));
+    vec3 p0 = oklab(palette_0);
+    vec3 p1 = oklab(palette_1);
+    vec3 p2 = oklab(palette_2);
+    vec3 p3 = oklab(palette_3);
+    vec3 p4 = oklab(palette_4);
+    vec3 m0 = (p1 - p0) / 0.24;
+    vec3 m1 = (p2 - p0) / 0.46;
+    vec3 m2 = (p3 - p1) / 0.44;
+    vec3 m3 = (p4 - p2) / 0.42;
+    vec3 m4 = (p4 - p3) / 0.20;
+    vec3 lab = altitude < 0.24
+        ? gradient_segment(p0, p1, m0, m1, 0.24, altitude)
+        : altitude < 0.46
+            ? gradient_segment(p1, p2, m1, m2, 0.22, altitude - 0.24)
+            : altitude < 0.68
+                ? gradient_segment(p2, p3, m2, m3, 0.22, altitude - 0.46)
+                : gradient_segment(p3, p4, m3, m4, 0.20, altitude - 0.68);
     return lab_srgb(lab);
+}
+
+float screen_noise(vec2 p) {
+    return fract(52.9829189 * fract(dot(p, vec2(0.06711056, 0.00583715))));
 }
 
 float hash(vec2 p) {
@@ -85,8 +112,11 @@ void main() {
     float sun = exp(-x * x * 35.0) * exp(-abs(distance_to_rim) * 140.0) * 0.10;
     color += sunlight * (rim * 0.70 + burn * 0.40 + glow * 0.40 + sun);
     color += sky_color(0.68) * (glow * 0.40 + burn * 0.50);
-    float grain = (hash(floor(uv * size)) - 0.5) * 0.008;
-    color += grain * sqrt(max(color - background, 0.0));
+    vec2 screen_pixel = floor(gl_FragCoord.xy);
+    vec3 dither = vec3(screen_noise(screen_pixel),
+        screen_noise(screen_pixel + vec2(17.0, 59.0)),
+        screen_noise(screen_pixel + vec2(43.0, 11.0))) - 0.5;
+    color += dither * above / 255.0;
     gl_FragColor = vec4(max(color, 0.0), 1.0);
 }
 `;
