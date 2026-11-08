@@ -83,7 +83,6 @@ float noise(vec2 p) {
 }
 
 void main() {
-    vec3 background = lab_srgb(oklab(vec3(0.173, 0.0, 0.0)));
     vec3 sunlight = lab_srgb(oklab(vec3(0.97, 0.012, 220.0)));
     vec2 size = resolution;
     float time = elapsed;
@@ -92,6 +91,9 @@ void main() {
     float y = (uv.y - horizon) * size.y / unit;
     float altitude = 0.16 * x * x - y;
     float pixel = 1.0 / unit;
+    float surface_span = max((1.0 - horizon) * size.y / unit - 0.16 * x * x, pixel);
+    float surface_progress = clamp(-altitude / surface_span, 0.0, 1.0);
+    vec3 background = lab_srgb(oklab(vec3(0.173 * (1.0 - surface_progress), 0.0, 0.0)));
     float above = smoothstep(-pixel, pixel * 1.5, altitude);
     float gradient = 0.88 - max(altitude, 0.0) * 2.2 + sin(time * 0.03) * 0.002;
     vec3 color = mix(background, sky_color(gradient), above);
@@ -116,7 +118,7 @@ void main() {
     vec3 dither = vec3(screen_noise(screen_pixel),
         screen_noise(screen_pixel + vec2(17.0, 59.0)),
         screen_noise(screen_pixel + vec2(43.0, 11.0))) - 0.5;
-    color += dither * above / 255.0;
+    color += dither / 255.0;
     gl_FragColor = vec4(max(color, 0.0), 1.0);
 }
 `;
