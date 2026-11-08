@@ -22,7 +22,7 @@ vec3 oklab(vec3 lch) {
     return vec3(lch.x, lch.y * cos(hue), lch.y * sin(hue));
 }
 
-vec3 lab_linear(vec3 lab) {
+vec3 lab_srgb(vec3 lab) {
     vec3 lms = vec3(lab.x + 0.3963377774 * lab.y + 0.2158037573 * lab.z,
         lab.x - 0.1055613458 * lab.y - 0.0638541728 * lab.z,
         lab.x - 0.0894841775 * lab.y - 1.2914855480 * lab.z);
@@ -30,19 +30,7 @@ vec3 lab_linear(vec3 lab) {
     vec3 linear_rgb = vec3(4.0767416621 * lms.x - 3.3077115913 * lms.y + 0.2309699292 * lms.z,
         -1.2684380046 * lms.x + 2.6097574011 * lms.y - 0.3413193965 * lms.z,
         -0.0041960863 * lms.x - 0.7034186147 * lms.y + 1.7076147010 * lms.z);
-    return max(linear_rgb, 0.0);
-}
-
-vec3 lab_srgb(vec3 lab) {
-    return srgb(lab_linear(lab));
-}
-
-vec3 linear_srgb(vec3 color) {
-    vec3 low = color / 12.92;
-    vec3 high = pow((max(color, 0.0) + 0.055) / 1.055, vec3(2.4));
-    return vec3(color.r <= 0.04045 ? low.r : high.r,
-        color.g <= 0.04045 ? low.g : high.g,
-        color.b <= 0.04045 ? low.b : high.b);
+    return srgb(max(linear_rgb, 0.0));
 }
 
 vec3 gradient_segment(vec3 a, vec3 b, vec3 slope_a, vec3 slope_b, float width, float position) {
@@ -76,56 +64,6 @@ vec3 sky_color(float altitude) {
     return lab_srgb(lab);
 }
 
-vec3 sky_irradiance(vec3 normal) {
-    vec3 horizon_light = linear_srgb(sky_color(0.68));
-    vec3 zenith_light = linear_srgb(sky_color(0.24));
-    vec3 irradiance = vec3(0.0);
-    for (int row = 0; row < 4; row++) {
-        float height = (float(row) + 0.5) / 4.0;
-        float ring = sqrt(1.0 - height * height);
-        vec3 radiance = mix(horizon_light, zenith_light, height) * 4.0;
-        for (int column = 0; column < 4; column++) {
-            float azimuth = (float(column) + 0.5) * 3.141592654 / 4.0;
-            vec3 direction = vec3(ring * cos(azimuth), -height, -ring * sin(azimuth));
-            irradiance += radiance * max(dot(normal, direction), 0.0);
-        }
-    }
-    return irradiance * (3.141592654 / 16.0);
-}
-
-float visibility(float cosine, float alpha2) {
-    return 2.0 * cosine / max(cosine + sqrt(alpha2 + (1.0 - alpha2) * cosine * cosine), 0.0001);
-}
-
-vec3 planet_color(vec2 projected, float radius) {
-    float depth = sqrt(max(radius * radius - dot(projected, projected), 0.0));
-    vec3 normal = normalize(vec3(projected, depth));
-    vec3 view = vec3(0.0, 0.0, 1.0);
-    vec3 light = normalize(vec3(-0.25, -0.16, -0.955));
-    vec3 halfway = normalize(light + view);
-    float nl = max(dot(normal, light), 0.0);
-    float nv = max(dot(normal, view), 0.0001);
-    float nh = max(dot(normal, halfway), 0.0);
-    float vh = max(dot(view, halfway), 0.0);
-    float alpha2 = pow(0.65, 4.0);
-    float distribution_base = nh * nh * (alpha2 - 1.0) + 1.0;
-    float distribution = alpha2 / (3.141592654 * distribution_base * distribution_base);
-    float fresnel = 0.04 + 0.96 * pow(1.0 - vh, 5.0);
-    float geometry = visibility(nl, alpha2) * visibility(nv, alpha2);
-    float specular = distribution * fresnel * geometry / max(4.0 * nl * nv, 0.0001);
-    vec3 albedo = lab_linear(oklab(vec3(0.50, 0.012, 250.0)));
-    vec3 sunlight = lab_linear(oklab(vec3(0.97, 0.012, 220.0))) * 3.0;
-    vec3 direct = (albedo * (1.0 - fresnel) / 3.141592654 + specular) * sunlight * nl;
-    float sky_fresnel = 0.04 + 0.96 * pow(1.0 - nv, 5.0);
-    vec3 indirect = albedo * (1.0 - sky_fresnel) * sky_irradiance(normal) / 3.141592654;
-    vec3 reflected = reflect(-view, normal);
-    float sky_visibility = max(-reflected.y, 0.0) * max(-reflected.z, 0.0);
-    vec3 reflection = linear_srgb(sky_color(0.52)) * sky_fresnel * sky_visibility * 0.35;
-    vec3 radiance = max(direct + indirect + reflection, 0.0);
-    float luminance = dot(radiance, vec3(0.2126, 0.7152, 0.0722));
-    return srgb(mix(vec3(luminance), radiance, 0.06) * 0.16);
-}
-
 float screen_noise(vec2 p) {
     return fract(52.9829189 * fract(dot(p, vec2(0.06711056, 0.00583715))));
 }
@@ -145,21 +83,18 @@ float noise(vec2 p) {
 }
 
 void main() {
+    vec3 background = lab_srgb(oklab(vec3(0.173, 0.0, 0.0)));
     vec3 sunlight = lab_srgb(oklab(vec3(0.97, 0.012, 220.0)));
     vec2 size = resolution;
     float time = elapsed;
     float unit = min(size.x, size.y * 1.4);
     float x = (uv.x - 0.5) * size.x / unit;
     float y = (uv.y - horizon) * size.y / unit;
-    float radius = 3.125;
-    vec2 projected = vec2(x, y - radius);
-    float altitude = length(projected) - radius;
+    float altitude = 0.16 * x * x - y;
     float pixel = 1.0 / unit;
     float above = smoothstep(-pixel, pixel * 1.5, altitude);
     float gradient = 0.88 - max(altitude, 0.0) * 2.2 + sin(time * 0.03) * 0.002;
-    vec3 color = altitude > pixel * 1.5
-        ? sky_color(gradient)
-        : mix(planet_color(projected, radius), sky_color(gradient), above);
+    vec3 color = mix(background, sky_color(gradient), above);
     float burn_time = time * 0.55;
     float coarse = noise(vec2(x * 22.0 - burn_time * 0.3, burn_time * 0.4));
     float serration = noise(vec2(x * 100.0 - burn_time * 0.5, burn_time * 1.4));
@@ -181,7 +116,7 @@ void main() {
     vec3 dither = vec3(screen_noise(screen_pixel),
         screen_noise(screen_pixel + vec2(17.0, 59.0)),
         screen_noise(screen_pixel + vec2(43.0, 11.0))) - 0.5;
-    color += dither / 255.0;
+    color += dither * above / 255.0;
     gl_FragColor = vec4(max(color, 0.0), 1.0);
 }
 `;
