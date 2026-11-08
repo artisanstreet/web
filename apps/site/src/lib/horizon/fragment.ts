@@ -68,23 +68,28 @@ void main() {
     float above = smoothstep(-pixel, pixel * 1.5, altitude);
     float gradient = 0.88 - max(altitude, 0.0) * 2.2 + sin(time * 0.03) * 0.002;
     vec3 color = mix(background, sky_color(gradient), above);
-    float burn_time = time * 0.55;
+    float burn_time = time * 1.3;
     float coarse = noise(vec2(x * 22.0 - burn_time * 0.3, burn_time * 0.4));
     float serration = noise(vec2(x * 100.0 - burn_time * 0.5, burn_time * 1.4));
     float chatter = noise(vec2(x * 270.0 + burn_time * 0.8, burn_time * 3.7));
-    float warp = (coarse - 0.5) * 0.0012 + (chatter - 0.5) * 0.0006;
+    float warp = (coarse - 0.5) * 0.0007 + (chatter - 0.5) * 0.0003;
     float distance_to_rim = altitude + warp;
-    float reach = 0.0010 + serration * serration * serration * 0.005;
-    float flame = noise(vec2(x * 180.0 + coarse - 0.5, altitude * 180.0 - burn_time * 2.5));
-    float burn = exp(-abs(distance_to_rim) / reach) * smoothstep(0.25, 0.85, flame)
-        * (1.0 - smoothstep(0.004, 0.009, distance_to_rim))
-        * smoothstep(-0.003, 0.001, distance_to_rim);
-    float rim = exp(-abs(distance_to_rim) * 1000.0) * (0.85 + chatter * 0.12)
-        * (0.95 + serration * 0.10);
+    float surge = smoothstep(0.3, 0.8, noise(vec2(x * 28.0 - burn_time * 0.4, burn_time * 0.9)));
+    float reach = 0.0022 + serration * 0.0012;
+    float flame = noise(vec2(x * 180.0 + (coarse - 0.5) * 3.0, altitude * 420.0 - burn_time * 3.5));
+    float detail = noise(vec2(x * 380.0 - burn_time * 1.8, altitude * 310.0 - burn_time * 5.0));
+    float burn = exp(-max(distance_to_rim, 0.0) / reach)
+        * (0.4 + smoothstep(0.2, 0.8, flame * 0.75 + detail * 0.4) * 0.6)
+        * (1.0 - smoothstep(0.005, 0.008, distance_to_rim))
+        * smoothstep(-0.001, 0.0005, distance_to_rim);
+    float pulse = 0.85 + surge * 0.25 + chatter * 0.2;
+    float rim = exp(-abs(distance_to_rim) * 1000.0) * pulse;
+    float filament = exp(-abs(distance_to_rim - reach * flame * 0.6) * 1600.0)
+        * smoothstep(0.45, 0.85, detail) * surge;
     float glow = exp(-abs(distance_to_rim) * 150.0) * 0.20;
     float sun = exp(-x * x * 35.0) * exp(-abs(distance_to_rim) * 140.0) * 0.10;
-    color += sunlight * (rim * 0.70 + burn * 0.14 + glow * 0.40 + sun);
-    color += sky_color(0.68) * (glow * 0.40 + burn * 0.32);
+    color += sunlight * (rim * 0.95 + burn * 0.85 * pulse + filament * 0.45 + glow * 0.55 + sun);
+    color += sky_color(0.68) * (glow * 0.40 + burn * 0.65);
     float grain = (hash(floor(uv * size)) - 0.5) * 0.008;
     color += grain * sqrt(max(color - background, 0.0));
     gl_FragColor = vec4(max(color, 0.0), 1.0);
