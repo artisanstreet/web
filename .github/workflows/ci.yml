@@ -11,8 +11,7 @@ jobs:
     env:
       AST_CORE_ORIGIN: https://api-ci.example.invalid
       AST_RELAY_ORIGIN: https://relay-ci.example.invalid
-      AST_AUTH_ORIGIN: https://auth-ci.example.invalid
-      AST_DASHBOARD_ORIGIN: https://dashboard-ci.example.invalid
+      AST_SITE_ORIGIN: https://site-ci.example.invalid
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -30,15 +29,14 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: https://dashboard.artisan.st
+      url: https://artisan.st
     concurrency:
       group: production
       cancel-in-progress: false
     env:
       AST_CORE_ORIGIN: https://api.artisan.st
       AST_RELAY_ORIGIN: https://relay.editor.artisan.st
-      AST_AUTH_ORIGIN: https://auth.artisan.st
-      AST_DASHBOARD_ORIGIN: https://dashboard.artisan.st
+      AST_SITE_ORIGIN: https://artisan.st
     steps:
       - uses: actions/checkout@v4
         with:

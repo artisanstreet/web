@@ -4,12 +4,13 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Artisan Street browser sites: auth + dashboard on TanStack Start (Cloudflare). App authors own apps/*; this repo owns root metadata, packages/*, infra/*.",
+  "description": "Artisan Street website: landing page, auth and dashboard on SvelteKit.",
   "packageManager": "pnpm@11.13.0",
   "scripts": {
     "typecheck": "pnpm -r run typecheck",
     "test": "pnpm -r --filter './apps/*' --filter './packages/core-client' --filter './infra' run test",
-    "build": "varlock run --inject vars -- pnpm -r run build"
+    "build": "varlock run --inject vars -- pnpm -r run build",
+    "dev": "portless artisan pnpm --filter @artisanstreet/site dev"
   },
   "devDependencies": {
     "@stylexjs/unplugin": "^0.19.1",

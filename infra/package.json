@@ -4,7 +4,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Alchemy IaC for auth + dashboard TanStack Start Workers (isolated Effect 4; service runtime stays Effect 3).",
+  "description": "Alchemy deployment for the unified artisan.st SvelteKit website.",
   "scripts": {
     "typecheck": "tsrs --noEmit",
     "test": "vp test run",
