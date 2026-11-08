@@ -87,9 +87,6 @@ void main() {
     color += sky_color(0.68) * (glow * 0.40 + burn * 0.32);
     float grain = (hash(floor(uv * size)) - 0.5) * 0.008;
     color += grain * sqrt(max(color - background, 0.0));
-    float edge = smoothstep(0.0, 0.13, uv.x) * smoothstep(0.0, 0.13, 1.0 - uv.x)
-        * smoothstep(0.0, 0.12, uv.y) * smoothstep(0.0, 0.16, 1.0 - uv.y);
-    color = mix(background, max(color, 0.0), edge);
-    gl_FragColor = vec4(color, 1.0);
+    gl_FragColor = vec4(max(color, 0.0), 1.0);
 }
 `;
