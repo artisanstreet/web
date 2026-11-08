@@ -95,6 +95,12 @@ void main() {
     float above = smoothstep(-pixel, pixel * 1.5, altitude);
     float gradient = 0.88 - max(altitude, 0.0) * 2.2 + sin(time * 0.03) * 0.002;
     vec3 color = mix(background, sky_color(gradient), above);
+    float surface_depth = max(-altitude, 0.0);
+    float surface_facing = sqrt(clamp(surface_depth * 0.64, 0.0, 1.0));
+    float grazing_reflection = pow(1.0 - surface_facing, 5.0);
+    float reflection_lobe = exp(-pow((x - 0.18) / 0.68, 2.0));
+    float surface_reflection = (1.0 - above) * grazing_reflection * (0.04 + reflection_lobe * 0.22);
+    color += sky_color(0.52) * surface_reflection;
     float burn_time = time * 0.55;
     float coarse = noise(vec2(x * 22.0 - burn_time * 0.3, burn_time * 0.4));
     float serration = noise(vec2(x * 100.0 - burn_time * 0.5, burn_time * 1.4));
@@ -116,7 +122,7 @@ void main() {
     vec3 dither = vec3(screen_noise(screen_pixel),
         screen_noise(screen_pixel + vec2(17.0, 59.0)),
         screen_noise(screen_pixel + vec2(43.0, 11.0))) - 0.5;
-    color += dither * above / 255.0;
+    color += dither / 255.0;
     gl_FragColor = vec4(max(color, 0.0), 1.0);
 }
 `;
