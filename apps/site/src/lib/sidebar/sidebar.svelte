@@ -3,10 +3,9 @@
   import { Option } from "effect";
   import Card from "../card/card.svelte";
   import Wordmark from "../wordmark/wordmark.svelte";
-  import { profile_state } from "../account/profile-state.svelte.ts";
   import { sidebar_state } from "./state.svelte.ts";
   import { Session, upgrade_target, type Account } from "../account/account.ts";
-  import { add_account_url, load_session, sign_out, switch_to } from "../account/session.ts";
+  import { add_account_url, sign_out, switch_to } from "../account/session.ts";
   import fallback_glyph from "../assets/user.svg?url";
   import settings_glyph from "../assets/settings.svg?url";
   import add_glyph from "../assets/user-plus.svg?url";
@@ -17,9 +16,7 @@
   import sign_out_glyph from "../assets/logout.svg?url";
   import upgrade_glyph from "../assets/circle-arrow-up.svg?url";
 
-  let session: Session = $state(Session.Loading());
-  const load_current_session = (_revision: number) => load_session;
-  session = yield* load_current_session(profile_state.revision);
+  let { session }: { session: Session } = $props();
 
   const entries = [
     { label: "Settings", icon: settings_glyph, href: Option.some("?settings=profile") },
