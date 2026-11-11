@@ -46,11 +46,12 @@
   outline-offset: 2px;
 }
 
-.danger-button.danger-button:active:not(:disabled) {
+.danger-button.danger-button:is(:active:not(:disabled), [data-state="open"]) {
   transform: translateY(1.5px);
+  filter: brightness(0.93);
   box-shadow:
-    inset 0 2px 4px oklch(0 0 0 / 0.45),
-    0 0 0 1px oklch(0.2 0.08 25);
+    inset 0 1px 3px oklch(0.15 0.06 25 / 0.6),
+    inset 0 -1px 0 oklch(0.95 0.03 20 / 0.12);
   transition-duration: var(--duration-micro);
 }
 
