@@ -11,6 +11,19 @@
 }
 
 :root {
+  --sky-night: oklch(0.20727 0.07434 269.72);
+  --sky-indigo: oklch(0.26775 0.09639 267.84);
+  --sky-blue: oklch(0.37028 0.11361 264.77);
+  --sky-dusk: oklch(0.49743 0.10638 256.73);
+  --sky-light: oklch(0.64097 0.08534 251.38);
+  --sky-horizon: oklch(0.67642 0.07468 250.22);
+  --sky-ink: oklch(1 0 0);
+  --sky-accent: var(--sky-horizon);
+  --sky-control: color-mix(in oklch, var(--sky-dusk), var(--sky-light) 20%);
+  --sky-stops: var(--sky-indigo) 6%, var(--sky-blue) 16%, var(--sky-dusk) 40%, var(--sky-control) 72%, var(--sky-light) 96%;
+  --sky-link-gradient: linear-gradient(180deg in oklch, color-mix(in oklch, var(--sky-horizon), oklch(1 0 none) 45%) 10%, var(--sky-horizon) 90%);
+  --sky-gradient: linear-gradient(180deg in oklch, var(--sky-night), var(--sky-stops), var(--sky-horizon));
+
   --duration-stagger: 40ms;
   --duration-micro: 80ms;
   --duration-quick: 150ms;
@@ -43,6 +56,11 @@
   --page-exit-enabled: 1;
   --page-slide-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --page-fade-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root[data-theme="light"] {
+  --sky-accent: var(--sky-dusk);
+  --sky-link-gradient: linear-gradient(180deg in oklch, var(--sky-blue) 10%, var(--sky-dusk) 90%);
 }
 
 html,
@@ -110,6 +128,21 @@ a {
 
 a:visited {
   color: var(--link-visited);
+}
+
+a:not([class]) {
+  background: var(--sky-link-gradient);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-decoration-color: var(--sky-accent);
+  box-decoration-break: clone;
+}
+
+@media (forced-colors: active) {
+  a:not([class]) {
+    background: none;
+    -webkit-text-fill-color: currentColor;
+  }
 }
 
 :focus-visible {

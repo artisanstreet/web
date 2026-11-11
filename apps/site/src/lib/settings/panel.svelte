@@ -217,7 +217,7 @@
         <Row title={account.plan._tag} detail="Your current plan.">
           {#snippet action()}
             {#if Option.isSome(upgrade)}
-              <Button tone="sand">Upgrade to {upgrade.value._tag}</Button>
+              <Button>Upgrade to {upgrade.value._tag}</Button>
             {/if}
           {/snippet}
         </Row>
@@ -294,7 +294,7 @@
             {#if totp_on && !turning_off}
               <Button tone="secondary" disabled={busy} onclick={ask(() => (turning_off = true))}>Turn off</Button>
             {:else if !totp_on && Option.isNone(enrollment)}
-              <Button tone="sand" disabled={busy} onclick={yield* begin_enrollment}>Set up</Button>
+              <Button disabled={busy} onclick={yield* begin_enrollment}>Set up</Button>
             {/if}
           {/snippet}
           {#if Option.isSome(enrollment)}
@@ -322,7 +322,6 @@
             </div>
             <div class="buttons">
               <Button
-                tone="sand"
                 disabled={busy || code.trim() === ""}
                 onclick={yield* act("security", confirm_enrollment(code), "Two-step sign-in is on.")}
               >
@@ -384,7 +383,7 @@
         <div class="session-well inset-shadow">
           <Row title="Sign out" detail="End this browser's session, or every session at once.">
             {#snippet action()}
-              <Button tone="sand" disabled={busy} onclick={yield* sign_out}>
+              <Button disabled={busy} onclick={yield* sign_out}>
                 This browser
               </Button>
               <Button tone="solid-danger" disabled={busy} onclick={yield* leave_everywhere}>
@@ -406,7 +405,6 @@
           <Row title="Deletion scheduled" detail={`Your account will be deleted on ${format_day(deletion.purge_after)}.`}>
             {#snippet action()}
               <Button
-                tone="sand"
                 disabled={busy}
                 onclick={yield* act("danger", cancel_deletion, "Deletion cancelled. Your account stays.")}
               >
@@ -640,7 +638,7 @@
   .glyph {
     width: 1.125rem;
     height: 1.125rem;
-    background-color: oklch(0.88 0.045 82);
+    background-color: var(--sky-accent);
     mask: var(--icon) center / contain no-repeat;
   }
 
@@ -671,12 +669,9 @@
   }
 
   .segments button[aria-checked="true"] {
-    --sand-top: oklch(0.92 0.035 88);
-    --sand-bottom: oklch(0.82 0.05 78);
-    color: oklch(0.27 0.025 70);
-    background:
-      radial-gradient(ellipse 70% 110% at 50% 115%, oklch(0.42 0.1 55 / 0.45), oklch(0.42 0.1 55 / 0) 70%),
-      linear-gradient(var(--sand-top), color-mix(in oklch, var(--sand-top), var(--sand-bottom)), var(--sand-bottom));
+    --sand-top: var(--sky-night);
+    color: var(--sky-ink);
+    background: var(--sky-gradient);
     box-shadow: inset 0 1px 0 color-mix(in oklch, var(--sand-top), oklch(1 0 0) 30%), var(--shadow-press);
   }
 

@@ -231,7 +231,7 @@
             <div class="input-card"><Card surface="var(--bg)" radius="var(--radius-sm)">
               <input id="profile-name" type="text" maxlength="120" autocomplete="name" bind:value={display_name} disabled={busy} />
             </Card></div>
-            <Button tone="sand" disabled={busy || !display_name.trim() || display_name.trim() === profile.display_name} aria-label={saving === "name" ? "Saving display name" : saved === "name" ? "Display name saved" : "Save display name"} onclick={yield* save_name}>
+            <Button disabled={busy || !display_name.trim() || display_name.trim() === profile.display_name} aria-label={saving === "name" ? "Saving display name" : saved === "name" ? "Display name saved" : "Save display name"} onclick={yield* save_name}>
               {@render save_indicator("name")}</Button>
           </div>
         </div>
@@ -244,7 +244,7 @@
             <div class="input-card"><Card surface="var(--bg)" radius="var(--radius-sm)">
               <div class="username-input"><span aria-hidden="true">@</span><input id="profile-username" type="text" maxlength="32" autocomplete="username" spellcheck="false" bind:value={username} disabled={busy} /></div>
             </Card></div>
-            <Button tone="sand" disabled={busy || !/^[a-z0-9][a-z0-9_-]{0,31}$/.test(username.trim().toLowerCase()) || username.trim().toLowerCase() === profile.username} aria-label={saving === "username" ? "Saving username" : saved === "username" ? "Username saved" : "Save username"} onclick={yield* save_username}>
+            <Button disabled={busy || !/^[a-z0-9][a-z0-9_-]{0,31}$/.test(username.trim().toLowerCase()) || username.trim().toLowerCase() === profile.username} aria-label={saving === "username" ? "Saving username" : saved === "username" ? "Username saved" : "Save username"} onclick={yield* save_username}>
               {@render save_indicator("username")}</Button>
           </div>
         </div>
@@ -265,7 +265,7 @@
             <div class="input-card"><Card surface="var(--bg)" radius="var(--radius-sm)">
               <input id="profile-phone" type="tel" autocomplete="tel" placeholder="+1 555 123 4567" bind:value={phone} disabled={busy} />
             </Card></div>
-            <Button tone="sand" disabled={busy || (phone.trim().replace(/[\s().-]/g, "") !== "" && !/^\+[1-9][0-9]{7,14}$/.test(phone.trim().replace(/[\s().-]/g, ""))) || (phone.trim().replace(/[\s().-]/g, "") || null) === profile.phone} aria-label={saving === "phone" ? "Saving phone number" : saved === "phone" ? "Phone number saved" : "Save phone number"} onclick={yield* save_phone}>
+            <Button disabled={busy || (phone.trim().replace(/[\s().-]/g, "") !== "" && !/^\+[1-9][0-9]{7,14}$/.test(phone.trim().replace(/[\s().-]/g, ""))) || (phone.trim().replace(/[\s().-]/g, "") || null) === profile.phone} aria-label={saving === "phone" ? "Saving phone number" : saved === "phone" ? "Phone number saved" : "Save phone number"} onclick={yield* save_phone}>
               {@render save_indicator("phone")}</Button>
           </div>
         </div>
@@ -302,7 +302,7 @@
           {#if avatar_error}<p class="error" role="alert">{avatar_error}</p>{/if}
           <div class="avatar-actions">
             <Button tone="secondary" disabled={busy} onclick={cancel_avatar}>Cancel</Button>
-            <Button tone="sand" disabled={busy} onclick={yield* save_avatar}>{saving_avatar ? "Saving…" : "Save avatar"}</Button>
+            <Button disabled={busy} onclick={yield* save_avatar}>{saving_avatar ? "Saving…" : "Save avatar"}</Button>
           </div>
         </div>
       </Card>
@@ -338,7 +338,8 @@
   .editor[data-saved="true"] > :global(.button)::before { opacity: 1; }
   .save-label { position: relative; visibility: hidden; }
   .save-label[data-visible="true"] { visibility: visible; }
-  .save-status { position: absolute; z-index: 1; left: calc(50% + var(--sp-1)); top: 50%; translate: -50% -50%; color: oklch(0.27 0.025 70); opacity: 0; transition: opacity var(--icon-swap-dur) var(--icon-swap-ease); }
+  .save-status { position: absolute; z-index: 1; left: calc(50% + var(--sp-1)); top: 50%; translate: -50% -50%; color: var(--sky-ink); opacity: 0; transition: opacity var(--icon-swap-dur) var(--icon-swap-ease); }
+  .editor[data-saved="true"] .save-status { color: var(--sky-night); }
   .save-status[data-visible="true"] { opacity: 1; }
   .save-spinner { animation: save-spin 0.8s linear infinite; }
   @keyframes save-spin { to { rotate: 360deg; } }

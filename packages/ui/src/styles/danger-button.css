@@ -1,0 +1,66 @@
+.danger-button.danger-button {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: var(--danger-button-height, 2.25rem);
+  padding: var(--sp-1) var(--sp-3);
+  color: oklch(1 0 0);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  white-space: nowrap;
+  text-decoration: none;
+  text-shadow: 0 1px 4px oklch(0 0 0 / 0.4);
+  border: 1px solid oklch(0.25 0.09 25);
+  border-radius: var(--danger-button-radius, calc(var(--radius-md) - 6px));
+  background: radial-gradient(130% 140% at 50% 125%, oklch(0.86 0.07 20) 0%, oklch(0.68 0.16 22) 25%, oklch(0.52 0.18 25) 58%, oklch(0.38 0.14 26) 92%);
+  box-shadow:
+    inset 0 1px 0 oklch(0.95 0.03 20 / 0.28),
+    inset 0 -1px 0 oklch(0 0 0 / 0.22),
+    var(--shadow-rest),
+    var(--shadow-press);
+  cursor: pointer;
+  outline: none;
+  transform: translateY(0);
+  transition:
+    transform var(--duration-quick) var(--ease-smooth-out),
+    box-shadow var(--duration-quick) var(--ease-smooth-out),
+    filter var(--duration-quick) var(--ease-smooth-out),
+    opacity var(--duration-quick) var(--ease-smooth-out);
+}
+
+.danger-button.danger-button:visited {
+  color: oklch(1 0 0);
+}
+
+.danger-button.danger-button:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.danger-button.danger-button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.danger-button.danger-button:active:not(:disabled) {
+  transform: translateY(1.5px);
+  box-shadow:
+    inset 0 2px 4px oklch(0 0 0 / 0.45),
+    0 0 0 1px oklch(0.2 0.08 25);
+  transition-duration: var(--duration-micro);
+}
+
+.danger-button.danger-button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .danger-button.danger-button {
+    transition: none;
+  }
+}

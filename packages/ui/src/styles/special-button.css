@@ -1,0 +1,78 @@
+@property --special-button-orbit {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.special-button.special-button {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: var(--special-button-height, 2.25rem);
+  padding: var(--sp-1) var(--sp-3);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  white-space: nowrap;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: var(--special-button-radius, calc(var(--radius-md) - 6px));
+  background:
+    radial-gradient(ellipse 70% 110% at 50% 115%, color-mix(in oklch, var(--bg), var(--ink) 7%), var(--bg) 70%) padding-box,
+    conic-gradient(from var(--special-button-orbit), #eaf4ff 0%, #a9c8e6 6%, #4c7bb6 16%, #1d3a7a 30%, #0b1440 50%, #1d3a7a 70%, #4c7bb6 84%, #a9c8e6 94%, #eaf4ff 100%) border-box;
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklch, var(--bg), var(--ink) 12%),
+    inset 0 -1px 0 color-mix(in oklch, var(--bg), oklch(0 0 0) 25%),
+    inset 0 2px 4px oklch(0 0 0 / 0.18),
+    var(--shadow-rest);
+  cursor: pointer;
+  outline: none;
+  transform: translateY(0);
+  animation: special-button-orbit 10s linear infinite;
+  transition:
+    transform var(--duration-quick) var(--ease-smooth-out),
+    box-shadow var(--duration-quick) var(--ease-smooth-out),
+    opacity var(--duration-quick) var(--ease-smooth-out);
+}
+
+@keyframes special-button-orbit {
+  to {
+    --special-button-orbit: 360deg;
+  }
+}
+
+.special-button.special-button:visited {
+  color: var(--ink);
+}
+
+.special-button.special-button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.special-button.special-button:active:not(:disabled) {
+  transform: translateY(1.5px);
+  box-shadow:
+    inset 0 1px 0 oklch(0 0 0 / 0.5),
+    inset 0 2px 4px oklch(0 0 0 / 0.45),
+    0 0 1px -1px oklch(0 0 0 / 0.4);
+  transition-duration: var(--duration-micro);
+}
+
+.special-button.special-button:disabled {
+  cursor: default;
+  opacity: 0.55;
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .special-button.special-button {
+    animation: none;
+    transition: none;
+  }
+}

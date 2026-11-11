@@ -28,11 +28,22 @@
   .well :global(button) {
     padding: 0;
     font: inherit;
-    color: oklch(0.88 0.045 82);
+    color: var(--sky-accent);
     text-decoration: underline;
     text-underline-offset: 0.15em;
-    background: none;
+    background: var(--sky-link-gradient);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-decoration-color: var(--sky-accent);
+    box-decoration-break: clone;
     border: 0;
     cursor: pointer;
+  }
+  @media (forced-colors: active) {
+    .well :global(a),
+    .well :global(button) {
+      background: none;
+      -webkit-text-fill-color: currentColor;
+    }
   }
 </style>

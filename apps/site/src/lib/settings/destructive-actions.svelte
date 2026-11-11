@@ -1,4 +1,5 @@
 <script lang="ts" effect>
+  import "@artisanstreet/ui/danger-button.css";
   import { Dialog, DropdownMenu } from "bits-ui";
   import { Effect } from "effect";
   import { CoreApi } from "@artisanstreet/core-client";
@@ -63,7 +64,7 @@
 </script>
 
         <DropdownMenu.Root>
-          <DropdownMenu.Trigger class="delete">
+          <DropdownMenu.Trigger class="delete danger-button">
             Destructive actions
           </DropdownMenu.Trigger>
           <DropdownMenu.Portal>
@@ -126,43 +127,8 @@
   .disable-buttons { display: flex; justify-content: flex-end; gap: var(--sp-2); }
 
   :global(.delete) {
-    --red-top: oklch(0.74 0.10 22);
-    --red-bottom: oklch(0.55 0.17 25);
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--sp-2);
     margin-top: auto;
-    min-height: 2.25rem;
-    padding: var(--sp-1) var(--sp-3);
-    color: oklch(0.14 0.035 22);
-    font-size: 0.875rem;
-    font-weight: 500;
-    font-family: inherit;
-    line-height: 1.25rem;
-    text-decoration: none;
-    border: 1px solid transparent;
-    border-radius: calc(var(--radius-md) - 6px);
-    cursor: pointer;
-    background:
-      radial-gradient(ellipse 70% 110% at 50% 115%, oklch(0.38 0.1 22 / 0.45), oklch(0.38 0.1 22 / 0) 70%) padding-box,
-      linear-gradient(var(--red-top), color-mix(in oklch, var(--red-top), var(--red-bottom)), var(--red-bottom)) padding-box,
-      linear-gradient(color-mix(in oklch, var(--red-top), oklch(0 0 0) 8%), color-mix(in oklch, var(--red-bottom), oklch(0 0 0) 25%)) border-box;
-    box-shadow: inset 0 1px 0 color-mix(in oklch, var(--red-top), oklch(1 0 0) 25%), var(--shadow-press);
-    transition: transform var(--duration-quick) var(--ease-smooth-out), box-shadow var(--duration-quick) var(--ease-smooth-out);
-  }
-
-  :global(.delete:focus-visible) { outline: 2px solid var(--focus); outline-offset: 1px; }
-
-  :global(.delete:hover) {
-    --red-top: color-mix(in oklch, oklch(0.74 0.10 22), oklch(1 0 0) 6%);
-  }
-
-  :global(.delete:active) {
-    --red-top: color-mix(in oklch, oklch(0.74 0.10 22), oklch(0 0 0) 4%);
-    --red-bottom: color-mix(in oklch, oklch(0.55 0.17 25), oklch(0 0 0) 5%);
-    transform: translateY(1px);
-    box-shadow: 0 0 0.5px oklch(0 0 0 / 0.3);
   }
 
   .action-wrapper { z-index: 60; }

@@ -7,29 +7,30 @@
 <button class="continue" type="submit" {disabled} data-busy={busy} aria-busy={busy} aria-label="Continue">
   <svg class="surface" viewBox="0 0 53 45" aria-hidden="true" focusable="false">
     <defs>
+      {#snippet sky_stops()}
+        <stop offset="0" class="face-top" />
+        <stop offset="0.06" class="face-indigo" />
+        <stop offset="0.16" class="face-middle" />
+        <stop offset="0.4" class="face-dusk" />
+        <stop offset="0.72" class="face-control" />
+        <stop offset="0.96" class="face-light" />
+        <stop offset="1" class="face-bottom" />
+      {/snippet}
       <clipPath id="{id}-clip">
         <path d="M0 0H45A8 8 0 0 1 53 8V37A8 8 0 0 1 45 45H0A8 8 0 0 0 8 37V8A8 8 0 0 0 0 0Z" />
       </clipPath>
-      <linearGradient id="{id}-rim" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="45">
-        <stop offset="0" class="rim-top" />
-        <stop offset="1" class="rim-bottom" />
+      <linearGradient id="{id}-rim" class="rim" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="45">
+        {@render sky_stops()}
       </linearGradient>
-      <linearGradient id="{id}-highlight" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="45">
-        <stop offset="0" class="highlight-top" />
-        <stop offset="1" class="face-bottom" />
+      <linearGradient id="{id}-highlight" class="highlight" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="45">
+        {@render sky_stops()}
       </linearGradient>
       <radialGradient id="{id}-shade" gradientUnits="userSpaceOnUse" cx="26" cy="-2" r="34" gradientTransform="translate(26 -2) scale(1 0.8) translate(-26 2)">
         <stop offset="0" class="shade-top" />
         <stop offset="1" class="shade-bottom" />
       </radialGradient>
-      <radialGradient id="{id}-glow" gradientUnits="userSpaceOnUse" cx="26" cy="47" r="28" gradientTransform="translate(26 47) scale(1 0.8) translate(-26 -47)">
-        <stop offset="0" class="glow-top" />
-        <stop offset="1" class="glow-bottom" />
-      </radialGradient>
-      <linearGradient id="{id}-face" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="45">
-        <stop offset="0" class="face-top" />
-        <stop offset="0.5" class="face-middle" />
-        <stop offset="1" class="face-bottom" />
+      <linearGradient id="{id}-face" class="face" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="45">
+        {@render sky_stops()}
       </linearGradient>
     </defs>
     <path
@@ -39,7 +40,6 @@
     <g clip-path="url(#{id}-clip)">
       <path d="M0 1H45A7 7 0 0 1 52 8V37A7 7 0 0 1 45 44H0Z" fill="url(#{id}-highlight)" />
       <path d="M0 2H45A6 6 0 0 1 51 8V37A6 6 0 0 1 45 43H0Z" fill="url(#{id}-face)" />
-      <path class="glow" d="M0 2H45A6 6 0 0 1 51 8V37A6 6 0 0 1 45 43H0Z" fill="url(#{id}-glow)" />
       <path class="shade" d="M0 2H45A6 6 0 0 1 51 8V37A6 6 0 0 1 45 43H0Z" fill="url(#{id}-shade)" />
     </g>
   </svg>
@@ -84,12 +84,13 @@
 
 <style>
   .continue {
-    --continue-sand-light: oklch(0.92 0.035 88);
-    --continue-sand-deep: oklch(0.82 0.05 78);
-    --continue-ink: oklch(0.27 0.025 70);
+    --continue-sand-light: var(--sky-night);
+    --continue-sand-deep: var(--sky-horizon);
+    --continue-ink: var(--sky-ink);
     --continue-face-top: var(--continue-sand-light);
     --continue-face-bottom: var(--continue-sand-deep);
-    --continue-bevel: 30%;
+    --continue-bevel: 0%;
+    --continue-rim: 12%;
     position: relative;
     display: grid;
     place-items: center;
@@ -124,7 +125,7 @@
     height: 100%;
     pointer-events: none;
     transform: translateY(0);
-    filter: drop-shadow(0 1.5px 1.5px oklch(0 0 0 / 0.3));
+    filter: drop-shadow(0 1px 2px oklch(0 0 0 / 0.12));
     transition:
       transform var(--duration-quick) var(--ease-smooth-out),
       filter var(--duration-quick) var(--ease-smooth-out);
@@ -190,8 +191,10 @@
   }
 
   .continue:active:enabled {
-    --continue-face-top: color-mix(in oklch, var(--continue-sand-light), oklch(0 0 0) 4%);
-    --continue-face-bottom: color-mix(in oklch, var(--continue-sand-deep), oklch(0 0 0) 5%);
+    --continue-face-top: color-mix(in oklch, var(--continue-sand-light), oklch(0 0 none) 4%);
+    --continue-face-bottom: color-mix(in oklch, var(--continue-sand-deep), oklch(0 0 none) 5%);
+    --continue-bevel: 0%;
+    --continue-rim: 18%;
   }
 
   .continue:active:enabled .surface {
@@ -215,57 +218,55 @@
     stop-color: oklch(0 0 0 / 0);
   }
 
-  .glow-top {
-    stop-color: oklch(0.42 0.1 55 / 0.45);
-  }
-
-  .glow-bottom {
-    stop-color: oklch(0.42 0.1 55 / 0);
-  }
-
   .continue:active:enabled .shade-top {
-    stop-color: oklch(0.25 0.04 65 / 0.4);
-  }
-
-  .continue:active:enabled .highlight-top {
-    stop-color: oklch(0.25 0.04 65 / 0.45);
+    stop-color: oklch(from var(--sky-night) l c h / 0.4);
   }
 
   .face-top,
+  .face-indigo,
   .face-middle,
-  .face-bottom,
-  .highlight-top,
-  .glow-top,
-  .glow-bottom,
-  .rim-top,
-  .rim-bottom,
-  .shade-top,
-  .shade-bottom {
+  .face-dusk,
+  .face-control,
+  .face-light,
+  .face-bottom {
+    stop-color: var(--stop-color);
     transition: stop-color var(--duration-fast) var(--ease-smooth-out);
   }
 
   .face-top {
-    stop-color: var(--continue-face-top);
+    --stop-color: var(--continue-face-top);
+  }
+
+  .face-indigo {
+    --stop-color: var(--sky-indigo);
   }
 
   .face-middle {
-    stop-color: color-mix(in oklch, var(--continue-face-top), var(--continue-face-bottom));
+    --stop-color: var(--sky-blue);
+  }
+
+  .face-dusk {
+    --stop-color: var(--sky-dusk);
+  }
+
+  .face-control {
+    --stop-color: var(--sky-control);
+  }
+
+  .face-light {
+    --stop-color: var(--sky-light);
   }
 
   .face-bottom {
-    stop-color: var(--continue-face-bottom);
+    --stop-color: var(--continue-face-bottom);
   }
 
-  .highlight-top {
-    stop-color: color-mix(in oklch, var(--continue-face-top), oklch(1 0 0) var(--continue-bevel));
+  .highlight stop {
+    stop-color: color-mix(in oklch, var(--stop-color), oklch(1 0 none) var(--continue-bevel));
   }
 
-  .rim-top {
-    stop-color: color-mix(in oklch, var(--continue-face-top), oklch(0 0 0) 8%);
-  }
-
-  .rim-bottom {
-    stop-color: color-mix(in oklch, var(--continue-face-bottom), oklch(0 0 0) 25%);
+  .rim stop {
+    stop-color: color-mix(in oklch, var(--stop-color), oklch(0 0 none) var(--continue-rim));
   }
 
   .arrow-top {

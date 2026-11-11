@@ -11,7 +11,7 @@
   import AuthCard from "../../../lib/auth/shell/auth-card.svelte";
   import Field from "../../../lib/auth/shell/field.svelte";
   import Heading from "../../../lib/auth/shell/heading.svelte";
-  import SandButton from "../../../lib/auth/shell/sand-button.svelte";
+  import Button from "../../../lib/auth/shell/button.svelte";
   import Well from "../../../lib/auth/shell/well.svelte";
   import FeedbackLabel from "../../../lib/auth/feedback/feedback.svelte";
   import { Feedback } from "../../../lib/auth/sign-in/view.ts";
@@ -103,9 +103,9 @@
         title="Approve this sign-in?"
         text="This signs in the browser that asked for the link. Only approve it if you just tried to sign in."
       />
-      <SandButton type="button" disabled={Approval.$is("Approving")(approval)} onclick={yield* Approve}>
+      <Button type="button" disabled={Approval.$is("Approving")(approval)} onclick={yield* Approve}>
         {Approval.$is("Approving")(approval) ? "Approving…" : "Approve sign-in"}
-      </SandButton>
+      </Button>
     {:else}
       <Heading title="This link is incomplete" text="It's missing the part that approves the sign-in." />
       <Well>Open the full link from your email, or <a href="/auth">request a new one</a>.</Well>
@@ -137,9 +137,9 @@
         instead.
       </Well>
     {:else}
-      <SandButton type="button" disabled={finishing} onclick={yield* Finish}>
+      <Button type="button" disabled={finishing} onclick={yield* Finish}>
         {finishing ? "Finishing…" : "Continue here"}
-      </SandButton>
+      </Button>
       <FeedbackLabel feedback={finish_feedback} id="approve-feedback" />
     {/if}
   {:else if Approval.$is("OtherDevice")(approval)}

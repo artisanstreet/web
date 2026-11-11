@@ -10,7 +10,10 @@
     "./tokens.css": "./src/styles/tokens.css",
     "./base.css": "./src/styles/base.css",
     "./surfaces.css": "./src/styles/surfaces.css",
+    "./danger-button.css": "./src/styles/danger-button.css",
+    "./default-button.css": "./src/styles/default-button.css",
     "./secondary-button.css": "./src/styles/secondary-button.css",
+    "./special-button.css": "./src/styles/special-button.css",
     "./stylex-dev": "./src/stylex-dev.tsx"
   },
   "main": "./src/index.ts",
